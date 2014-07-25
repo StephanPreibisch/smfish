@@ -13,9 +13,11 @@ import spim.process.cuda.NativeLibraryTools;
  */
 public class TestCUDA
 {
-	public TestCUDA( final CUDASeparableConvolution cuda )
+	public TestCUDA( final CUDASeparableConvolution cuda, final int devId )
 	{
-		
+		System.out.println( cuda.multipleOfX_31() );
+		System.out.println( cuda.multipleOfY_31() );
+		System.out.println( cuda.multipleOfZ_31() );
 	}
 	
 	public static void main( String[] args )
@@ -26,5 +28,7 @@ public class TestCUDA
 			return;
 
 		final ArrayList< Integer > dev = CUDATools.queryCUDADetails( cuda, false );
+		
+		new TestCUDA( cuda, dev.get( 0 ) );
 	}
 }
