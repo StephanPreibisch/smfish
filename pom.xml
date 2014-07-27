@@ -2,6 +2,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>smfish</artifactId>
   <name>smfish</name>
+
+  <parent>
+  	<groupId>sc.fiji</groupId>
+  	<version>2.0.0-SNAPSHOT</version>
+  	<artifactId>pom-fiji</artifactId>
+  </parent>
+
   <dependencies>
   	<dependency>
   		<groupId>sc.fiji</groupId>
@@ -9,9 +16,13 @@
   		<version>2.0.0-SNAPSHOT</version>
   	</dependency>
   </dependencies>
-  <parent>
-  	<groupId>sc.fiji</groupId>
-  	<version>2.0.0-SNAPSHOT</version>
-  	<artifactId>pom-fiji</artifactId>
-  </parent>
+
+	<repositories>
+		<!-- NB: for project parent -->
+		<repository>
+			<id>imagej.public</id>
+			<url>http://maven.imagej.net/content/groups/public</url>
+		</repository>
+	</repositories>
+
 </project>
