@@ -6,10 +6,13 @@ import java.util.ArrayList;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.basictypeaccess.array.FloatArray;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.smfish.OpenImg;
 import net.imglib2.smfish.TestCUDA;
 import net.imglib2.type.numeric.real.FloatType;
+import ij.ImageJ;
 import ij.process.FloatProcessor;
 import spim.process.cuda.CUDASeparableConvolution;
 import spim.process.cuda.CUDASeparableConvolutionFunctions;
@@ -168,14 +171,6 @@ public class Filter
 
 	public static void main( String[] args )
 	{
-		final File f = new File( "img_1388x1040x81.tif" );
-		//final File f = new File( "img_1280x1024x128.tif" );
-		System.out.println( f.getAbsolutePath() );
-		
-		final Img< FloatType > input = OpenImg.open( f.getAbsolutePath(), new ArrayImgFactory<FloatType>() );
-		final float[] imgF = ((FloatArray)((ArrayImg< FloatType, ? > )input).update( null ) ).getCurrentStorageArray();
-		final FloatArray3D fa = new FloatArray3D( imgF, (int)input.dimension( 0 ), (int)input.dimension( 1 ), (int)input.dimension( 2 ) );
-
 		final CUDASeparableConvolution cuda = TestCUDA.loadCUDA();
 		ArrayList< Integer > dev = CUDATools.queryCUDADetails( cuda, false );
 
@@ -185,6 +180,20 @@ public class Filter
 			dev.add( - 1 );
 		}
 
-		createDownsampled( fa, 0.5f, 0.5f, 0.5f, new CUDASeparableConvolutionFunctions( cuda, dev.get( 0 ) ) );
+		final File f = new File( "img_1388x1040x81.tif" );
+		//final File f = new File( "img_1280x1024x128.tif" );
+		System.out.println( f.getAbsolutePath() );
+
+		new ImageJ();
+
+		final Img< FloatType > input = OpenImg.open( f.getAbsolutePath(), new ArrayImgFactory<FloatType>() );
+		final float[] imgF = ((FloatArray)((ArrayImg< FloatType, ? > )input).update( null ) ).getCurrentStorageArray();
+		final FloatArray3D fa = new FloatArray3D( imgF, (int)input.dimension( 0 ), (int)input.dimension( 1 ), (int)input.dimension( 2 ) );
+
+		ImageJFunctions.show( input );
+
+		FloatArray3D downsampled = createDownsampled( fa, 0.5f, 0.5f, 0.5f, new CUDASeparableConvolutionFunctions( cuda, dev.get( 0 ) ) );
+		
+		ImageJFunctions.show( ArrayImgs.floats( downsampled.data, new long[]{ downsampled.width, downsampled.height, downsampled.depth } ) );
 	}
 }
