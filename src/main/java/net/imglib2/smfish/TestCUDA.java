@@ -13,6 +13,7 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.basictypeaccess.array.FloatArray;
 import net.imglib2.type.numeric.real.FloatType;
 import spim.process.cuda.CUDASeparableConvolution;
+import spim.process.cuda.CUDASeparableConvolutionFunctions;
 import spim.process.cuda.CUDATools;
 import spim.process.cuda.NativeLibraryTools;
 import spim.process.fusion.export.DisplayImage;
@@ -49,10 +50,13 @@ public class TestCUDA
 		
 		final float[] imgFCPU = ((FloatArray)((ArrayImg< FloatType, ? > )imgCPU).update( null ) ).getCurrentStorageArray();
 		final float[] imgFGPU = ((FloatArray)((ArrayImg< FloatType, ? > )imgGPU).update( null ) ).getCurrentStorageArray();
-		
+
+		CUDASeparableConvolutionFunctions cudaFunctions = new CUDASeparableConvolutionFunctions( cuda, devId );
+		cudaFunctions.gauss( imgFGPU, new int[]{ w, h, d }, sigma );
+		/*
 		final double[] kdouble = Util.createGaussianKernel1DDouble( sigma, true );
-		final float[] kernelCPU = getFloatKernelPadded( kdouble, kdouble.length );
-		final float[] kernelGPU = getFloatKernelPadded( kdouble, 15 );
+		final float[] kernelCPU = CUDASeparableConvolutionFunctions.getFloatKernelPadded( kdouble, kdouble.length );
+		final float[] kernelGPU = CUDASeparableConvolutionFunctions.getFloatKernelPadded( kdouble, 15 );
 		
 		System.out.println( "kernelsize CPU: " + kernelCPU.length );
 		System.out.println( "kernelsize GPU: " + kernelGPU.length );
@@ -74,7 +78,7 @@ public class TestCUDA
 		}
 		
 		System.out.println( t / 50 );
-
+		*/
 		new DisplayImage().exportImage( imgGPU, "GPU " + f.getAbsolutePath() );
 
 		long time = System.currentTimeMillis();
@@ -86,50 +90,34 @@ public class TestCUDA
 		//new DisplayImage().exportImage( imgCPU, "CPU " + f.getAbsolutePath() );
 	}
 
-	public static float[] getFloatKernelPadded( final double[] kernel, final int size )
-	{
-		if ( kernel.length > size )
-			return null;
-
-		final float[] k = new float[ size ];
-
-		final int s = ( size - kernel.length )/2;
-
-		for ( int i = 0; i < kernel.length; ++i )
-			k[ s + i ] = (float)kernel[ i ];
-
-		return k;
-	}
-	
-	public static void main( String[] args )
+	public static CUDASeparableConvolution loadCUDA()
 	{
 		final CUDASeparableConvolution cuda;
-		ArrayList< Integer > dev;
 		
 		final File f = new File( "/home/preibisch/workspace/smfish/libSeparableConvolutionCUDALib.so" );
 		
 		if ( f.exists() )
 		{
 			cuda = (CUDASeparableConvolution)Native.loadLibrary( f.getAbsolutePath(), CUDASeparableConvolution.class );
-			dev = new ArrayList<Integer>();
-			dev.add( 0 );
 		}
 		else
 		{
-			cuda = NativeLibraryTools.loadNativeLibrary( "separable", CUDASeparableConvolution.class );
-	
-			if ( cuda == null )
-				return;
-
-			dev = CUDATools.queryCUDADetails( cuda, false );
-
-			if ( dev == null )
-			{
-				dev = new ArrayList< Integer >();
-				dev.add( - 1 );
-			}
+			cuda = NativeLibraryTools.loadNativeLibrary( "separable", CUDASeparableConvolution.class );	
 		}
-		
+
+		return cuda;
+	}
+	public static void main( String[] args )
+	{
+		final CUDASeparableConvolution cuda = loadCUDA();
+		ArrayList< Integer > dev = CUDATools.queryCUDADetails( cuda, false );
+
+		if ( dev == null )
+		{
+			dev = new ArrayList< Integer >();
+			dev.add( - 1 );
+		}
+
 		new TestCUDA( cuda, dev.get( 0 ) );
 	}
 }
