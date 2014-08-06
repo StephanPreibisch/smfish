@@ -30,8 +30,8 @@ public class TestCUDA
 	public TestCUDA( final CUDASeparableConvolution cuda, final int devId )
 	{
 		
-		final File f = new File( "img_1388x1040x81.tif" );
-		//final File f = new File( "img_1280x1024x128.tif" );
+		//final File f = new File( "img_1388x1040x81.tif" );
+		final File f = new File( "img_1280x1024x128.tif" );
 		System.out.println( f.getAbsolutePath() );
 		
 		final Img< FloatType > input = OpenImg.open( f.getAbsolutePath(), new ArrayImgFactory<FloatType>() );
@@ -46,11 +46,13 @@ public class TestCUDA
 		final int h = (int)imgCPU.dimension( 1 );
 		final int d = (int)imgCPU.dimension( 2 );
 		
-		final double sigma = 2;
+		final double sigma = 40;
 		
 		final float[] imgFCPU = ((FloatArray)((ArrayImg< FloatType, ? > )imgCPU).update( null ) ).getCurrentStorageArray();
 		final float[] imgFGPU = ((FloatArray)((ArrayImg< FloatType, ? > )imgGPU).update( null ) ).getCurrentStorageArray();
 
+		new ImageJ();
+		
 		CUDASeparableConvolutionFunctions cudaFunctions = new CUDASeparableConvolutionFunctions( cuda, devId );
 		cudaFunctions.gauss( imgFGPU, new int[]{ w, h, d }, sigma );
 		/*
@@ -64,8 +66,6 @@ public class TestCUDA
 		if ( kernelGPU == null || kernelCPU == null )
 			return;
 
-		new ImageJ();
-		
 		long t = 0;
 		
 		//for ( int i = 0; i < 50; ++i )
