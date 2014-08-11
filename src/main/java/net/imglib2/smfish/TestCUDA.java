@@ -12,6 +12,7 @@ import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.basictypeaccess.array.FloatArray;
 import net.imglib2.type.numeric.real.FloatType;
+import spim.process.cuda.CUDADevice;
 import spim.process.cuda.CUDASeparableConvolution;
 import spim.process.cuda.CUDASeparableConvolutionFunctions;
 import spim.process.cuda.CUDATools;
@@ -27,7 +28,7 @@ import com.sun.jna.Native;
  */
 public class TestCUDA
 {
-	public TestCUDA( final CUDASeparableConvolution cuda, final int devId )
+	public TestCUDA( final CUDASeparableConvolution cuda, final CUDADevice devId )
 	{
 		
 		//final File f = new File( "img_1388x1040x81.tif" );
@@ -53,7 +54,7 @@ public class TestCUDA
 
 		new ImageJ();
 		
-		CUDASeparableConvolutionFunctions cudaFunctions = new CUDASeparableConvolutionFunctions( cuda, devId );
+		CUDASeparableConvolutionFunctions cudaFunctions = new CUDASeparableConvolutionFunctions( cuda, devId.getDeviceId() );
 		cudaFunctions.gauss( imgFGPU, new int[]{ w, h, d }, sigma );
 		/*
 		final double[] kdouble = Util.createGaussianKernel1DDouble( sigma, true );
@@ -110,12 +111,12 @@ public class TestCUDA
 	public static void main( String[] args )
 	{
 		final CUDASeparableConvolution cuda = loadCUDA();
-		ArrayList< Integer > dev = CUDATools.queryCUDADetails( cuda, false );
+		ArrayList< CUDADevice > dev = CUDATools.queryCUDADetails( cuda, false );
 
 		if ( dev == null )
 		{
-			dev = new ArrayList< Integer >();
-			dev.add( - 1 );
+			dev = new ArrayList< CUDADevice >();
+			dev.add( new CUDADevice( -1, "CPU", Runtime.getRuntime().maxMemory(), 0, 0 ) );
 		}
 
 		new TestCUDA( cuda, dev.get( 0 ) );

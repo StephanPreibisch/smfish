@@ -14,6 +14,7 @@ import net.imglib2.smfish.TestCUDA;
 import net.imglib2.type.numeric.real.FloatType;
 import ij.ImageJ;
 import ij.process.FloatProcessor;
+import spim.process.cuda.CUDADevice;
 import spim.process.cuda.CUDASeparableConvolution;
 import spim.process.cuda.CUDASeparableConvolutionFunctions;
 import spim.process.cuda.CUDATools;
@@ -172,12 +173,12 @@ public class Filter
 	public static void main( String[] args )
 	{
 		final CUDASeparableConvolution cuda = TestCUDA.loadCUDA();
-		ArrayList< Integer > dev = CUDATools.queryCUDADetails( cuda, false );
+		ArrayList< CUDADevice > dev = CUDATools.queryCUDADetails( cuda, false );
 
 		if ( dev == null )
 		{
-			dev = new ArrayList< Integer >();
-			dev.add( - 1 );
+			dev = new ArrayList< CUDADevice >();
+			dev.add( new CUDADevice( -1, "CPU", Runtime.getRuntime().maxMemory(), 0, 0 ) );
 		}
 
 		final File f = new File( "img_1388x1040x81.tif" );
@@ -192,7 +193,7 @@ public class Filter
 
 		ImageJFunctions.show( input );
 
-		FloatArray3D downsampled = createDownsampled( fa, 0.5f, 0.5f, 0.5f, new CUDASeparableConvolutionFunctions( cuda, dev.get( 0 ) ) );
+		FloatArray3D downsampled = createDownsampled( fa, 0.5f, 0.5f, 0.5f, new CUDASeparableConvolutionFunctions( cuda, dev.get( 0 ).getDeviceId() ) );
 		
 		ImageJFunctions.show( ArrayImgs.floats( downsampled.data, new long[]{ downsampled.width, downsampled.height, downsampled.depth } ) );
 	}
