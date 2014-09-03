@@ -6,12 +6,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
-import mpicbg.imglib.util.Util;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.basictypeaccess.array.FloatArray;
 import net.imglib2.type.numeric.real.FloatType;
+import spim.fiji.plugin.util.OpenImg;
 import spim.process.cuda.CUDADevice;
 import spim.process.cuda.CUDASeparableConvolution;
 import spim.process.cuda.CUDASeparableConvolutionFunctions;
@@ -116,7 +116,7 @@ public class TestCUDA
 		if ( dev == null )
 		{
 			dev = new ArrayList< CUDADevice >();
-			dev.add( new CUDADevice( -1, "CPU", Runtime.getRuntime().maxMemory(), 0, 0 ) );
+			dev.add( new CUDADevice( -1, "CPU", Runtime.getRuntime().maxMemory(), Runtime.getRuntime().maxMemory(), 0, 0 ) );
 		}
 
 		new TestCUDA( cuda, dev.get( 0 ) );

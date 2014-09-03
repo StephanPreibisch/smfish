@@ -1,5 +1,8 @@
 package net.imglib2.scalespace;
 
+import ij.ImageJ;
+import ij.process.FloatProcessor;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -9,11 +12,9 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.basictypeaccess.array.FloatArray;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.smfish.OpenImg;
 import net.imglib2.smfish.TestCUDA;
 import net.imglib2.type.numeric.real.FloatType;
-import ij.ImageJ;
-import ij.process.FloatProcessor;
+import spim.fiji.plugin.util.OpenImg;
 import spim.process.cuda.CUDADevice;
 import spim.process.cuda.CUDASeparableConvolution;
 import spim.process.cuda.CUDASeparableConvolutionFunctions;
@@ -178,7 +179,7 @@ public class Filter
 		if ( dev == null )
 		{
 			dev = new ArrayList< CUDADevice >();
-			dev.add( new CUDADevice( -1, "CPU", Runtime.getRuntime().maxMemory(), 0, 0 ) );
+			dev.add( new CUDADevice( -1, "CPU", Runtime.getRuntime().maxMemory(), Runtime.getRuntime().maxMemory(), 0, 0 ) );
 		}
 
 		final File f = new File( "img_1388x1040x81.tif" );

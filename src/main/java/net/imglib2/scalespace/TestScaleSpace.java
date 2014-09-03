@@ -95,7 +95,7 @@ public class TestScaleSpace
 		if ( dev == null )
 		{
 			dev = new ArrayList< CUDADevice >();
-			dev.add( new CUDADevice( -1, "CPU", Runtime.getRuntime().maxMemory(), 0, 0 ) );
+			dev.add( new CUDADevice( -1, "CPU", Runtime.getRuntime().maxMemory(), Runtime.getRuntime().maxMemory(), 0, 0 ) );
 		}
 		
 		new TestScaleSpace( new CUDASeparableConvolutionFunctions( cuda, dev.get( 0 ).getDeviceId() ) );
