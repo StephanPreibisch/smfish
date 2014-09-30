@@ -2,7 +2,10 @@ package net.imglib2.analyzesegmentation;
 
 import ij3d.Content;
 import ij3d.Image3DUniverse;
+import ij3d.ImageCanvas3D;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +63,24 @@ public class VisualizeSegmentation
 
 			drawInvisibleBoundingBox( univ, cells );
 			drawCells( univ, cells, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
+
+			( (ImageCanvas3D)univ.getCanvas() ).addMouseMotionListener(
+					new MouseMotionListener()
+					{
+						final RecolorCell rcc = new RecolorCell( univ, new Color3f( 1, 0, 0 ) );
+
+						@Override
+						public void mouseMoved( final MouseEvent arg0 )
+						{
+							rcc.testLocation( arg0.getPoint().x, arg0.getPoint().y );
+						}
+						
+						@Override
+						public void mouseDragged(MouseEvent arg0) {
+							// TODO Auto-generated method stub
+							
+						}
+					});
 
 			//VisualizationFunctions.drawArrow( univ, new Vector3f( new float[]{ 100, 100, 100 } ), 45, 10 );
 			//drawNuclei( univ, cells, new Transform3D(), 0.95f );
@@ -119,11 +140,9 @@ public class VisualizeSegmentation
 			transformGroup.setCapability( TransformGroup.ALLOW_CHILDREN_WRITE );
 
 			// add the sphere
-			final int r = random.nextInt( 256 );
-			final int g = random.nextInt( 256 );
-			final int b = random.nextInt( 256 );
+			final int r = random.nextInt( 192 );
 			final Appearance appearance = new Appearance();
-			appearance.setColoringAttributes( new ColoringAttributes( new Color3f( r/255f, g/255f, b/255f ), ColoringAttributes.SHADE_GOURAUD ) );
+			appearance.setColoringAttributes( new ColoringAttributes( new Color3f( r/255f, r/255f, r/255f ), ColoringAttributes.SHADE_GOURAUD ) );
 			appearance.setTransparencyAttributes( new TransparencyAttributes( TransparencyAttributes.NICEST, transparency ) );
 
 			appearance.getColoringAttributes().setCapability( ColoringAttributes.ALLOW_COLOR_READ );
@@ -133,6 +152,7 @@ public class VisualizeSegmentation
 			s.setCapability( Sphere.ENABLE_APPEARANCE_MODIFY );
 			s.getShape().setCapability( Shape3D.ALLOW_APPEARANCE_WRITE );
 			transformGroup.addChild( s );
+			s.setName( "nucleus " + cell.getId() );
 
 			// store the link between cell and sphere
 			cell.setSphere( s );
@@ -295,7 +315,6 @@ public class VisualizeSegmentation
 
 	public static void main( String[] args )
 	{
-		final VisualizeSegmentation vis = new VisualizeSegmentation();
-		vis.discoWorm();
+		new VisualizeSegmentation();
 	}
 }
