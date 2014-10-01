@@ -8,7 +8,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -29,7 +28,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import mpicbg.imglib.multithreading.SimpleMultiThreading;
-import mpicbg.spim.registration.bead.Bead;
 import mpicbg.spim.vis3d.VisualizeBeads;
 
 import org.w3c.dom.Document;
@@ -46,7 +44,7 @@ public class VisualizeSegmentation
 	public static String defaultXML = "/Users/preibischs/Documents/Microscopy/smFISH/samidouble_43_reconstructed.cells.xml";
 
 	final JFileChooser fileChooser;
-	final HashMap< Integer, Cell > cells = new HashMap< Integer, Cell >();
+	final Cells cells = new Cells();
 	int nextCellId = 0;
 
 	public VisualizeSegmentation()
@@ -57,11 +55,7 @@ public class VisualizeSegmentation
 		{
 			final Image3DUniverse univ = VisualizeBeads.initUniverse();
 
-			final ArrayList< Bead > beads = new ArrayList<Bead>();
-			for ( int i = 0; i < 100; ++i )
-				beads.add( new Bead( i, new float[]{ i*10, i*10, i*10 }, null ) );
-
-			drawInvisibleBoundingBox( univ, cells );
+			drawInvisibleBoundingBox( univ, cells.getCells() );
 			drawCells( univ, cells, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
 
 			( (ImageCanvas3D)univ.getCanvas() ).addMouseMotionListener(
@@ -93,19 +87,19 @@ public class VisualizeSegmentation
 		
 		while ( System.currentTimeMillis() > 0 )
 		{
-			for ( final Cell cell : cells.values() )
+			for ( final Sphere s : cells.getSpheres().values() )
 			{
 				final int r = random.nextInt( 256 );
 				final int g = random.nextInt( 256 );
 				final int b = random.nextInt( 256 );
-				cell.getSphere().getAppearance().getColoringAttributes().setColor( new Color3f( r/255f, g/255f, b/255f ) );
+				s.getAppearance().getColoringAttributes().setColor( new Color3f( r/255f, g/255f, b/255f ) );
 			}
 			
 			SimpleMultiThreading.threadWait( 100 );
 		}
 	}
 
-	public static BranchGroup drawCells( final Image3DUniverse univ, final Map< Integer, Cell > cells, final Transform3D globalTransform, 
+	public static BranchGroup drawCells( final Image3DUniverse univ, final Cells cells, final Transform3D globalTransform, 
 			final Color3f color, final float transparency )
 	{		
 		// get the scene
@@ -123,8 +117,10 @@ public class VisualizeSegmentation
 		final Random random = new Random( 1 );
 
 		// add all beads
-		for ( final Cell cell : cells.values() )
+		for ( final int id : cells.getCells().keySet() )
 		{
+			final Cell cell = cells.getCells().get( id );
+			
 			// set the bead coordinates
 			cell.getPosition().localize( loc );
 			translation.set( loc );
@@ -155,7 +151,7 @@ public class VisualizeSegmentation
 			s.setName( "nucleus " + cell.getId() );
 
 			// store the link between cell and sphere
-			cell.setSphere( s );
+			cells.getSpheres().put( id, s );
 
 			// add the group to the view branch
 			viewBranch.addChild( transformGroup );
@@ -250,7 +246,9 @@ public class VisualizeSegmentation
 
 			System.out.println( "loading annotions from " + file );
 
-			cells.clear();
+			cells.getCells().clear();
+			cells.getSpheres().clear();
+
 			nextCellId = 0;
 
 			try
@@ -263,12 +261,12 @@ public class VisualizeSegmentation
 				for ( int i = 0; i < nodes.getLength(); ++i )
 				{
 					final Cell cell = Cell.fromXml( ( Element ) nodes.item( i ) );
-					cells.put( cell.getId(), cell );
+					cells.getCells().put( cell.getId(), cell );
 					if ( cell.getId() >= nextCellId )
 						nextCellId = cell.getId() + 1;
 				}
 
-				System.out.println( "Loaded " + cells.keySet().size() + " cells." );
+				System.out.println( "Loaded " + cells.getCells().keySet().size() + " cells." );
 			}
 			catch ( final Exception e )
 			{

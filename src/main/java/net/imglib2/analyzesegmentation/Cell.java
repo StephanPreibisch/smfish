@@ -7,8 +7,6 @@ import net.imglib2.util.Util;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.sun.j3d.utils.geometry.Sphere;
-
 class Cell
 {
 	private final int id;
@@ -16,8 +14,6 @@ class Cell
 	private int radius;
 
 	private final RealPoint position;
-
-	private Sphere sphere;
 
 	public Cell( final int id, final RealLocalizable position, final int radius )
 	{
@@ -31,9 +27,6 @@ class Cell
 	{
 		return "cell( " + id + ", " + Util.printCoordinates( position ) + ", " + radius + " )";
 	}
-
-	public void setSphere( final Sphere sphere ) { this.sphere = sphere; }
-	public Sphere getSphere() { return sphere; }
 
 	public int getRadius()
 	{
