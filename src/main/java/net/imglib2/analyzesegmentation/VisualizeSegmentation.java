@@ -2,9 +2,9 @@ package net.imglib2.analyzesegmentation;
 
 import ij3d.Content;
 import ij3d.Image3DUniverse;
-import ij3d.ImageCanvas3D;
 
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.util.ArrayList;
@@ -58,23 +58,10 @@ public class VisualizeSegmentation
 			drawInvisibleBoundingBox( univ, cells.getCells() );
 			drawCells( univ, cells, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
 
-			( (ImageCanvas3D)univ.getCanvas() ).addMouseMotionListener(
-					new MouseMotionListener()
-					{
-						final RecolorCell rcc = new RecolorCell( univ, new Color3f( 1, 0, 0 ) );
+			final RecolorCell rcc = new RecolorCell( univ, new Color3f( 1, 0, 0 ) );
+			univ.getCanvas().addMouseMotionListener( rcc );
 
-						@Override
-						public void mouseMoved( final MouseEvent arg0 )
-						{
-							rcc.testLocation( arg0.getPoint().x, arg0.getPoint().y );
-						}
-						
-						@Override
-						public void mouseDragged(MouseEvent arg0) {
-							// TODO Auto-generated method stub
-							
-						}
-					});
+			univ.getCanvas().addMouseListener( new DefineInitialCellVector( univ, rcc, cells ) );
 
 			//VisualizationFunctions.drawArrow( univ, new Vector3f( new float[]{ 100, 100, 100 } ), 45, 10 );
 			//drawNuclei( univ, cells, new Transform3D(), 0.95f );
@@ -149,6 +136,7 @@ public class VisualizeSegmentation
 			s.getShape().setCapability( Shape3D.ALLOW_APPEARANCE_WRITE );
 			transformGroup.addChild( s );
 			s.setName( "nucleus " + cell.getId() );
+			s.setUserData( cell );
 
 			// store the link between cell and sphere
 			cells.getSpheres().put( id, s );

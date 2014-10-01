@@ -1,5 +1,8 @@
 package net.imglib2.analyzesegmentation;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+
 import ij3d.Image3DUniverse;
 import ij3d.ImageCanvas3D;
 
@@ -11,14 +14,14 @@ import javax.vecmath.Color3f;
 import com.sun.j3d.utils.geometry.Sphere;
 import com.sun.j3d.utils.pickfast.PickCanvas;
 
-public class RecolorCell
+public class RecolorCell implements MouseMotionListener
 {
 	final PickCanvas pickCanvas;
 	final Image3DUniverse univ;
 	final Color3f colorActive;
 
-	Sphere oldSphere = null;
-	Color3f oldColor = new Color3f();
+	Sphere currentSphere = null;
+	Color3f currentColor = new Color3f();
 
 	public RecolorCell( final Image3DUniverse univ, final Color3f colorActive )
 	{
@@ -28,8 +31,17 @@ public class RecolorCell
 
 		pickCanvas.setMode( PickInfo.PICK_GEOMETRY );
 		pickCanvas.setFlags( PickInfo.SCENEGRAPHPATH | PickInfo.CLOSEST_INTERSECTION_POINT );
-		pickCanvas.setTolerance( 3 );
+		pickCanvas.setTolerance( 0 );
 	}
+
+	public Sphere getCurrentSphere() { return currentSphere; }
+	public Color3f getCurrentColor() { return currentColor; }
+
+	@Override
+	public void mouseMoved( final MouseEvent arg0 ) { testLocation( arg0.getPoint().x, arg0.getPoint().y ); }
+
+	@Override
+	public void mouseDragged( final MouseEvent arg0 ) {}
 
 	public void testLocation( final int x, final int y )
 	{
@@ -39,10 +51,10 @@ public class RecolorCell
 
 		if ( info == null )
 		{
-			if ( oldSphere != null )
+			if ( currentSphere != null )
 			{
-				oldSphere.getAppearance().getColoringAttributes().setColor( oldColor );
-				oldSphere = null;
+				currentSphere.getAppearance().getColoringAttributes().setColor( currentColor );
+				currentSphere = null;
 			}
 
 			return;
@@ -58,15 +70,15 @@ public class RecolorCell
 			{
 				final Sphere newSphere = (Sphere)node;
 				
-				if ( newSphere == oldSphere )
+				if ( newSphere == currentSphere )
 					return;
 
-				if ( oldSphere != null )
-					oldSphere.getAppearance().getColoringAttributes().setColor( oldColor );
+				if ( currentSphere != null )
+					currentSphere.getAppearance().getColoringAttributes().setColor( currentColor );
 
-				newSphere.getAppearance().getColoringAttributes().getColor( oldColor );
+				newSphere.getAppearance().getColoringAttributes().getColor( currentColor );
 				newSphere.getAppearance().getColoringAttributes().setColor( colorActive );
-				oldSphere = newSphere;
+				currentSphere = newSphere;
 			}
 		}
 	}
