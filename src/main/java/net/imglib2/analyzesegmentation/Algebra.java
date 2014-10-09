@@ -6,12 +6,78 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 /**
- * 
- * @author Stephan Preibisch
+ *  Copyright (c) 2014 Stephan Preibisch
  *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @author Stephan Preibisch
  */
 public class Algebra
 {
+	/**
+	 * Given a line segment from p0 >> p1, compute the relative location 
+	 * (p0 = 0 > p1 = 1) on this line where the distance to point q is minimal.
+	 * 
+	 * @param p0 - line segment start
+	 * @param p1 - line segment end
+	 * @param q - query point
+	 * @return
+	 */
+	public static double pointOfShortestDistance( final Point3f p0, final Point3f p1, final Point3f q )
+	{
+		final Vector3f v0 = new Vector3f( p0.x - q.x, p0.y - q.y, p0.z - q.z );
+		final Vector3f v1 = new Vector3f( p1.x - p0.x, p1.y - p0.y, p1.z - p0.z );
+
+		return -v0.dot( v1 ) / v1.lengthSquared();
+	}
+
+	/**
+	 * Given a vector defined by a line segment from p0 >> p1, compute the shortest 
+	 * squared distance between point q and the vector.
+	 * 
+	 * @param p0 - line segment start
+	 * @param p1 - line segment end
+	 * @param q - query point
+	 * @return
+	 */
+	public static double shortestSquaredDistance( final Point3f p0, final Point3f p1, final Point3f q )
+	{
+		final Vector3f v0 = new Vector3f( p0.x - q.x, p0.y - q.y, p0.z - q.z );
+		final Vector3f v1 = new Vector3f( p1.x - p0.x, p1.y - p0.y, p1.z - p0.z );
+
+		final float v0ls = v0.lengthSquared();
+		final float v1ls = v1.lengthSquared();
+		final float dotp = v0.dot( v1 );
+
+		return ( v0ls * v1ls - dotp * dotp ) / v1ls;
+	}
+
+	/**
+	 * Given a vector defined by a line segment from p0 >> p1, compute the shortest distance 
+	 * between point q and the vector.
+	 * 
+	 * @param p0 - line segment start
+	 * @param p1 - line segment end
+	 * @param q - query point
+	 * @return
+	 */
+	public static double shortestDistance( final Point3f p0, final Point3f p1, final Point3f q )
+	{
+		return Math.sqrt( shortestSquaredDistance( p0, p1, q ) );
+	}
+
 	/**
 	 * Computes a Transform3D that will rotate vector v0 into the direction of vector v1.
 	 * Note: vectors MUST be normalized for this to work!
