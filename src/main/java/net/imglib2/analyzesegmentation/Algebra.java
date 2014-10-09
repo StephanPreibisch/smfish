@@ -13,11 +13,11 @@ import javax.vecmath.Vector3f;
 public class Algebra
 {
 	/**
-	 * Computes a Transform3D that will rotate the oldDirection into the newDirection.
+	 * Computes a Transform3D that will rotate vector v0 into the direction of vector v1.
 	 * Note: vectors MUST be normalized for this to work!
-	 * 
-	 * @param oldDirection
-	 * @param newDirection
+	 *
+	 * @param v0
+	 * @param v1
 	 * @return
 	 */
 	public static Transform3D getRotation( final Vector3f v0, final Vector3f v1 )
@@ -35,6 +35,7 @@ public class Algebra
 		// the rotation angle is defined by the dot product (if normalized)
 		final float angle = v0.dot( v1 );
 
+		// Do an axis/angle 3d transformation
 		final Transform3D t = new Transform3D();
 		t.set( new AxisAngle4f( rotAxis, (float)Math.acos( angle ) ) );
 
@@ -72,7 +73,11 @@ public class Algebra
 		if ( scale )
 		{
 			final float scaling = v1.length() / v0.length();
-			transform.setScale( scaling );
+
+			// if the scaling turns out to be NaN, v0 must be of length zero,
+			// in this case we just do nothing
+			if ( !Float.isNaN( scaling ) )
+				transform.setScale( scaling );
 		}
 
 		// third, preconcatenate the rotation
