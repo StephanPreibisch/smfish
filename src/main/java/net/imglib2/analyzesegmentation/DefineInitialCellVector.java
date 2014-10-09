@@ -83,4 +83,7 @@ public class DefineInitialCellVector implements MouseListener
 
 	@Override
 	public void mouseReleased( final MouseEvent e ) {}
+
+	public Sphere getSphere1() { return sphere1; }
+	public Sphere getSphere2() { return sphere2; }
 }
