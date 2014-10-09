@@ -30,6 +30,8 @@ public class Algebra
 	 * Given a line segment from p0 >> p1, compute the relative location 
 	 * (p0 = 0 > p1 = 1) on this line where the distance to point q is minimal.
 	 * 
+	 * See: http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+	 * 
 	 * @param p0 - line segment start
 	 * @param p1 - line segment end
 	 * @param q - query point
@@ -46,6 +48,8 @@ public class Algebra
 	/**
 	 * Given a vector defined by a line segment from p0 >> p1, compute the shortest 
 	 * squared distance between point q and the vector.
+	 * 
+	 * See: http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
 	 * 
 	 * @param p0 - line segment start
 	 * @param p1 - line segment end
@@ -67,6 +71,8 @@ public class Algebra
 	/**
 	 * Given a vector defined by a line segment from p0 >> p1, compute the shortest distance 
 	 * between point q and the vector.
+	 * 
+	 * See: http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
 	 * 
 	 * @param p0 - line segment start
 	 * @param p1 - line segment end
