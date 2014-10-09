@@ -5,8 +5,6 @@ import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import mpicbg.models.AffineModel3D;
-
 /**
  * 
  * @author Stephan Preibisch
@@ -77,18 +75,16 @@ public class Algebra
 			transform.setScale( scaling );
 		}
 
-		// third, do the rotation
+		// third, preconcatenate the rotation
 		v0.normalize();
 		v1.normalize();
 
 		transform.mul( getRotation( v0, v1 ), transform );
 
-		// fourth, translate to the 
+		// fourth, preconcatenate the translation to the origin of the second line segment
 		final Transform3D t = new Transform3D();
 		t.setTranslation( new Vector3f( p10.x, p10.y, p10.z ) );
 		transform.mul( t, transform );
-		
-		System.out.println( transform );
 
 		return transform;
 	}
