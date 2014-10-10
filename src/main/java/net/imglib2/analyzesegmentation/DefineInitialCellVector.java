@@ -45,17 +45,6 @@ public class DefineInitialCellVector implements MouseListener
 			{
 				col = col2;
 				sphere2 = rcc.getCurrentSphere();
-				
-				final List< Point3f > lineMesh = new ArrayList< Point3f >();
-				
-				final Cell cell1 = (Cell)sphere1.getUserData();
-				final Cell cell2 = (Cell)sphere2.getUserData();
-				
-				lineMesh.add( new Point3f( cell1.getPosition().getFloatPosition( 0 ), cell1.getPosition().getFloatPosition( 1 ), cell1.getPosition().getFloatPosition( 2 ) ) );
-				lineMesh.add( new Point3f( cell2.getPosition().getFloatPosition( 0 ), cell2.getPosition().getFloatPosition( 1 ), cell2.getPosition().getFloatPosition( 2 ) ) );
-				
-				final Content content = univ.addLineMesh( lineMesh, new Color3f(), "InitialVector", false );
-				content.showCoordinateSystem( false );
 			}
 			else
 			{
