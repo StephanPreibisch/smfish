@@ -85,6 +85,31 @@ public class Algebra
 	}
 
 	/**
+	 * Given a line segment from p0 >> p1, compute the relative location (p0 = 0 > p1 = 1) on
+	 * this line where the distance to point q is minimal as well as the shortest squared distance
+	 * to the point.
+	 * 
+	 * See: http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+	 * 
+	 * @param p0 - line segment start
+	 * @param p1 - line segment end
+	 * @param q - query point
+	 * @param result - result[ 0 ] will contain the squared distance, result[ 1 ] the relative point on the segmented line
+	 */
+	public static void shortestSquaredDistanceAndPoint( final Point3f p0, final Point3f p1, final Point3f q, final double[] result )
+	{
+		final Vector3f v0 = new Vector3f( p0.x - q.x, p0.y - q.y, p0.z - q.z );
+		final Vector3f v1 = new Vector3f( p1.x - p0.x, p1.y - p0.y, p1.z - p0.z );
+
+		final float v0ls = v0.lengthSquared();
+		final float v1ls = v1.lengthSquared();
+		final float dotp = v0.dot( v1 );
+
+		result[ 0 ] = ( v0ls * v1ls - dotp * dotp ) / v1ls;
+		result[ 1 ] = -dotp / v1ls;
+	}
+
+	/**
 	 * Computes a Transform3D that will rotate vector v0 into the direction of vector v1.
 	 * Note: vectors MUST be normalized for this to work!
 	 *
