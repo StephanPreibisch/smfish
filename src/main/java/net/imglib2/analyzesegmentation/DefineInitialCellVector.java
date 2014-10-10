@@ -1,15 +1,9 @@
 package net.imglib2.analyzesegmentation;
 
-import ij3d.Content;
-import ij3d.Image3DUniverse;
-
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.vecmath.Color3f;
-import javax.vecmath.Point3f;
 
 import com.sun.j3d.utils.geometry.Sphere;
 
@@ -18,14 +12,12 @@ public class DefineInitialCellVector implements MouseListener
 	final Color3f col1 = new Color3f( new float[]{ 12f/255f, 139f/255f, 0f/255f } );
 	final Color3f col2 = new Color3f( new float[]{ 23f/255f, 97f/255f, 255f/255f } );
 	final RecolorCell rcc;
-	final Image3DUniverse univ;
 	final Cells cells;
 
 	Sphere sphere1, sphere2;
 
-	public DefineInitialCellVector( final Image3DUniverse univ, final RecolorCell rcc, final Cells cells )
+	public DefineInitialCellVector( final RecolorCell rcc, final Cells cells )
 	{
-		this.univ = univ;
 		this.rcc = rcc;
 		this.cells = cells;
 	}

@@ -67,7 +67,7 @@ public class VisualizeSegmentation
 			final RecolorCell rcc = new RecolorCell( univ, new Color3f( 1, 0, 0 ) );
 			univ.getCanvas().addMouseMotionListener( rcc );
 
-			final DefineInitialCellVector dicv = new DefineInitialCellVector( univ, rcc, cells );
+			final DefineInitialCellVector dicv = new DefineInitialCellVector( rcc, cells );
 			univ.getCanvas().addMouseListener( dicv );
 
 			do
@@ -76,13 +76,8 @@ public class VisualizeSegmentation
 			}
 			while ( dicv.getSphere2() == null );
 
-			final Cell cell1 = ((Cell)dicv.getSphere1().getUserData());
-			final Cell cell2 = ((Cell)dicv.getSphere2().getUserData());
-			final Point3f p1 = new Point3f( cell1.getPosition().getFloatPosition( 0 ), cell1.getPosition().getFloatPosition( 1 ), cell1.getPosition().getFloatPosition( 2 ) );
-			final Point3f p2 = new Point3f( cell2.getPosition().getFloatPosition( 0 ), cell2.getPosition().getFloatPosition( 1 ), cell2.getPosition().getFloatPosition( 2 ) );
-			
-			//drawTruncatedCone( 10, 20, 100, univ, makeRotationDir( p1, p2 ), new Color3f( 1, 0, 1 ), 0.5f );
-			drawTruncatedCone( 10, 20, 100, univ, new Transform3D(), new Color3f( 1, 0, 1 ), 0.5f );
+			final FindWormOutline fwo = new FindWormOutline( univ, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()) );
+			fwo.findOutline();
 
 			//System.exit( 0 );
 			//VisualizationFunctions.drawArrow( univ, new Vector3f( new float[]{ 100, 100, 100 } ), 45, 10 );
@@ -371,18 +366,27 @@ public class VisualizeSegmentation
 
 	public static void main( String[] args )
 	{
+		final Point3f p0 = new Point3f( 0, 0, 0 );
+		final Point3f p1 = new Point3f( 1, 0, 0 );
+		final Point3f q = new Point3f( 0.9f, 1, 0 );
+		
+		System.out.println( Algebra.pointOfShortestDistance( p0, p1, q ) );
+		System.out.println( Algebra.shortestDistance( p0, p1, q ) );
+		
+		/*
 		final Point3f p00 = new Point3f( 0, 0, 0 );
-		final Point3f p01 = new Point3f( 1, 0, 0 );
+		final Point3f p01 = new Point3f( 0, 0, 0 );
 
 		final Point3f p10 = new Point3f( 0, 0, 0 );
-		final Point3f p11 = new Point3f( 1, 1, 1 );
+		final Point3f p11 = new Point3f( 0, 0, 0 );
 
-		final Transform3D t = Algebra.getTransformation( p00, p01, p10, p11, false );
+		final Transform3D t = Algebra.getTransformation( p00, p01, p10, p11, true );
 
 		t.transform( p00 );
 		t.transform( p01 );
 		System.out.println( p00 + " == " + p10 );
 		System.out.println( p01 + " == " + p11 );
+		*/
 		
 		//new VisualizeSegmentation();
 	}
