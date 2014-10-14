@@ -76,7 +76,7 @@ public class VisualizeSegmentation
 			}
 			while ( dicv.getSphere2() == null );
 
-			final FindWormOutline fwo = new FindWormOutline( univ, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()) );
+			final FindWormOutline fwo = new FindWormOutline( univ, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()), 20 );
 			fwo.findOutline();
 
 			//System.exit( 0 );
@@ -171,31 +171,36 @@ public class VisualizeSegmentation
 		return viewBranch;
 	}
 
+	public static Content drawLine( final Image3DUniverse univ, final Point3f p0, final Point3f p1, final String name )
+	{
+		final List< Point3f > lineMesh = new ArrayList< Point3f >();
+
+		lineMesh.add( p0 );
+		lineMesh.add( p1 );
+		
+		final Content content = univ.addLineMesh( lineMesh, new Color3f(), name, false );
+		content.showCoordinateSystem( false );
+
+		return content;
+	}
+
 	public static BranchGroup drawTruncatedCone( final float r1, final float r2, final float l, final Image3DUniverse univ, final Transform3D globalTransform, final Color3f color, final float transparency )
-	{		
+	{
 		// get the scene
 		final BranchGroup parent = univ.getScene();
 
 		// create a new branch group that contains all transform groups which contain one sphere each
 		final BranchGroup viewBranch = new BranchGroup();
 		viewBranch.setCapability( BranchGroup.ALLOW_CHILDREN_WRITE );
-		
-		// init the structures needed to code the position of the beads
-		final Transform3D transform = new Transform3D();
-		final Point3f translation = new Point3f();
-		final float[] loc = new float[ 3 ];
-
-		final Random random = new Random( 1 );
 
 		final TransformGroup transformGroup = new TransformGroup( globalTransform );
 
 		transformGroup.setCapability( TransformGroup.ALLOW_TRANSFORM_WRITE );
 		transformGroup.setCapability( TransformGroup.ALLOW_CHILDREN_WRITE );
 
-		// add the sphere
-		final int r = random.nextInt( 192 );
+		// add the truncated cone
 		final Appearance appearance = new Appearance();
-		appearance.setColoringAttributes( new ColoringAttributes( new Color3f( r/255f, r/255f, r/255f ), ColoringAttributes.SHADE_GOURAUD ) );
+		appearance.setColoringAttributes( new ColoringAttributes( color, ColoringAttributes.SHADE_GOURAUD ) );
 		appearance.setTransparencyAttributes( new TransparencyAttributes( TransparencyAttributes.NICEST, transparency ) );
 
 		appearance.getColoringAttributes().setCapability( ColoringAttributes.ALLOW_COLOR_READ );
@@ -205,10 +210,10 @@ public class VisualizeSegmentation
 		cone.setCapability( Sphere.ENABLE_APPEARANCE_MODIFY );
 		//cone.getShape().setCapability( Shape3D.ALLOW_APPEARANCE_WRITE );
 		transformGroup.addChild( cone );
-		cone.setName( "cone 1" );
 
 		// add the group to the view branch
 		viewBranch.addChild( transformGroup );
+		viewBranch.setCapability( BranchGroup.ALLOW_DETACH );
 
 		// ????
 		viewBranch.compile();
@@ -367,12 +372,20 @@ public class VisualizeSegmentation
 	public static void main( String[] args )
 	{
 		final Point3f p0 = new Point3f( 0, 0, 0 );
-		final Point3f p1 = new Point3f( 1, 0, 0 );
+		final Point3f p1 = new Point3f( 2, 0, 0 );
 		final Point3f q = new Point3f( 0.9f, 1, 0 );
 		
 		System.out.println( Algebra.pointOfShortestDistance( p0, p1, q ) );
 		System.out.println( Algebra.shortestDistance( p0, p1, q ) );
-		
+
+		final Vector3f v1 = new Vector3f( 1.5f, 0, 0 );
+		final Vector3f v2 = new Vector3f( 324, 123.0f, -1323 );
+
+		Algebra.normalizeLength( v2, v1 );
+
+		System.out.println( v1 + " " + v1.length() );
+		System.out.println( v2 + " " + v2.length() );
+
 		/*
 		final Point3f p00 = new Point3f( 0, 0, 0 );
 		final Point3f p01 = new Point3f( 0, 0, 0 );
@@ -388,6 +401,6 @@ public class VisualizeSegmentation
 		System.out.println( p01 + " == " + p11 );
 		*/
 		
-		//new VisualizeSegmentation();
+		new VisualizeSegmentation();
 	}
 }
