@@ -7,7 +7,7 @@ import net.imglib2.util.Util;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-class Cell
+public class Cell
 {
 	private final int id;
 
