@@ -1,57 +1,134 @@
 package net.imglib2.analyzesegmentation;
 
+import ij3d.Image3DUniverse;
+
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import ij3d.Content;
-import ij3d.Image3DUniverse;
+import net.imglib2.analyzesegmentation.wormfit.FirstInlierCells;
+import net.imglib2.analyzesegmentation.wormfit.InlierCell;
+import net.imglib2.analyzesegmentation.wormfit.InlierCells;
 
 public class FindWormOutline
 {
 	final Image3DUniverse univ;
 	final Cells cells;
-	final Cell cell1, cell2;
+	final Cell cell0, cell1;
+	final float initialRadius;
 
-	public FindWormOutline( final Image3DUniverse univ, final Cells cells, final Cell cell1, final Cell cell2 )
+	protected float[] vectorStep = new float[]{ 20f, 10f, 5f, 2f, 1f, 0.5f };
+
+	public FindWormOutline( final Image3DUniverse univ, final Cells cells, final Cell cell0, final Cell cell1, final float initialRadius )
 	{
 		this.univ = univ;
 		this.cells = cells;
+		this.cell0 = cell0;
 		this.cell1 = cell1;
-		this.cell2 = cell2;
+		this.initialRadius = initialRadius;
 	}
 
 	public void findOutline()
 	{
-		final List< Point3f > lineMesh = new ArrayList< Point3f >();
+		final Color3f inlierColor = new Color3f( 1, 0, 0 );
 
-		final Point3f p10 = new Point3f( cell1.getPosition().getFloatPosition( 0 ), cell1.getPosition().getFloatPosition( 1 ), cell1.getPosition().getFloatPosition( 2 ) );
-		final Point3f p11 = new Point3f( cell2.getPosition().getFloatPosition( 0 ), cell2.getPosition().getFloatPosition( 1 ), cell2.getPosition().getFloatPosition( 2 ) );
+		InlierCells i1 = defineFirstCells( initialRadius );
+		i1.visualizeInliers( univ, cells, inlierColor );
 
-		final Vector3f v = new Vector3f( p11.x - p10.x, p11.y - p10.y, p11.z - p10.z );
-		p10.sub( v );
-		p10.sub( v );
-
-		lineMesh.add( p10 );
-		lineMesh.add( p11 );
-		
-		final Content content = univ.addLineMesh( lineMesh, new Color3f(), "InitialVector", false );
-		content.showCoordinateSystem( false );
-
-		v.set( p11.x - p10.x, p11.y - p10.y, p11.z - p10.z );
-
-		final Point3f p00 = new Point3f( 0, -v.length()/2, 0 );
-		final Point3f p01 = new Point3f( 0, v.length()/2, 0 );
-
-		VisualizeSegmentation.drawTruncatedCone( 0, 20, v.length(), univ, Algebra.getTransformation( p00, p01, p10, p11, false ), new Color3f( 1, 0, 1 ), 0.75f );
-		//drawTruncatedCone( 10, 20, 100, univ, new Transform3D(), new Color3f( 1, 0, 1 ), 0.5f );
+		InlierCells i2 = fitNextSegment( i1 );
+		i2.visualizeInliers( univ, cells, inlierColor );
 	}
 
-	protected void fitSegment( final Point3f start, final float startRadius, final Vector3f direction )
+	protected InlierCells fitNextSegment( final InlierCells previousInliers )
 	{
+		// the initial radius and point are the last radius and point of the previous segment
+		final float sr = previousInliers.getR1();
+		final Point3f sp = previousInliers.getP1();
+		final Vector3f d = new Vector3f( sp.x - previousInliers.getP0().x, sp.y - previousInliers.getP0().y, sp.z - previousInliers.getP0().z );
+		final float l = d.length();
+
+		for ( int stepIndex = 0; stepIndex < vectorStep.length; ++stepIndex )
+		{
+			final float step = vectorStep[ stepIndex ];
+			
+			for ( int zi = -1; zi <= 1; ++zi )
+				for ( int yi = -1; yi <= 1; ++yi )
+					for ( int xi = -1; xi <= 1; ++xi )
+					{
+						// compute the test vector
+						final Vector3f v = new Vector3f( d.x + xi * step, d.y + yi * step, d.z + zi * step );
+
+						// normalize it to the same length
+						Algebra.normalizeLength( v, l );
+
+						// compute the corresponding point
+						final Point3f p = new Point3f( sp.x + v.x, sp.y + v.y, sp.z + v.z );
+
+						// compute the quality of the fit
+						final InlierCells inliers = smallestRadius( sp, p, sr, cells );
+					}
+		}
 		
+		return null;
+	}
+
+	protected InlierCells smallestRadius( final Point3f p0, final Point3f p1, final float r0, final Cells cells )
+	{
+		InlierCells inliers = null;
+
+		for ( float r1 = 0; r1 <= r0 * 2; r1 += 0.1f )
+		{
+			final InlierCells current = testGuess( p0, p1, r0, r1, cells );
+
+			if ( inliers == null || inliers.getInlierCells().size() < current.getInlierCells().size() )
+				inliers = current;
+		}
+
+		return inliers;
+	}
+
+	protected InlierCells testGuess( final Point3f p0, final Point3f p1, final float r0, final float r1, final Cells cells )
+	{
+		final ArrayList< InlierCell > inliers = new ArrayList< InlierCell >();
+		final Point3f q = new Point3f();
+
+		final double r[] = new double[ 2 ];
+
+		// test which points are along the defined line segment
+		for ( final Cell cell : cells.getCells().values() )
+		{
+			q.x = cell.getPosition().getFloatPosition( 0 );
+			q.y = cell.getPosition().getFloatPosition( 1 );
+			q.z = cell.getPosition().getFloatPosition( 2 );
+			
+			Algebra.shortestSquaredDistanceAndPoint( p0, p1, q, r );
+			final double dist = Math.sqrt( r[ 0 ] );
+			final double t = r[ 1 ];
+			
+			if ( t >= 0 && t <= 1 )
+			{
+				final double distThres = r0 * t + r1 * ( 1 - t );
+				
+				if ( dist + cell.getRadius() <= distThres )
+					inliers.add( new InlierCell( cell, dist, t ) );
+			}
+		}
+
+		return new InlierCells( inliers, r0, r1, p0, p1 );
+	}
+
+	protected InlierCells defineFirstCells( final float initialRadius )
+	{
+		final Point3f p0 = new Point3f( cell0.getPosition().getFloatPosition( 0 ), cell0.getPosition().getFloatPosition( 1 ), cell0.getPosition().getFloatPosition( 2 ) );
+		final Point3f p1 = new Point3f( cell1.getPosition().getFloatPosition( 0 ), cell1.getPosition().getFloatPosition( 1 ), cell1.getPosition().getFloatPosition( 2 ) );
+
+		final ArrayList< InlierCell > inliers = new ArrayList< InlierCell >();
+
+		inliers.add( new InlierCell( cell0, 0, 0 ) );
+		inliers.add( new InlierCell( cell1, 0, 1 ) );
+
+		return new FirstInlierCells( inliers, 0, initialRadius, p0, p1 );
 	}
 }
