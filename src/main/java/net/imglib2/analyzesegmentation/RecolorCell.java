@@ -79,6 +79,8 @@ public class RecolorCell implements MouseMotionListener
 				newSphere.getAppearance().getColoringAttributes().getColor( currentColor );
 				newSphere.getAppearance().getColoringAttributes().setColor( colorActive );
 				currentSphere = newSphere;
+
+				System.out.println( "Cell id: "  + ((Cell)currentSphere.getUserData()).getId() );
 			}
 		}
 	}
