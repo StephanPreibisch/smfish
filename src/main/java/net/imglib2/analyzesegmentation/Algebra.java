@@ -27,6 +27,30 @@ import javax.vecmath.Vector3f;
 public class Algebra
 {
 	/**
+	 * Normalize the length of Vector3f v1 so that it has the same length as Vector3f v2
+	 * @param v1 - to be normalized
+	 * @param v2 - the reference vector
+	 */
+	public static void normalizeLength( final Vector3f v1, final Vector3f v2 )
+	{
+		normalizeLength( v1, v2.length() );
+	}
+
+	/**
+	 * Normalize the length of Vector3f v1 so that it has length l
+	 * @param v - to be normalized
+	 * @param l - new length
+	 */
+	public static void normalizeLength( final Vector3f v, final double l )
+	{
+		final double c = l / v.length();
+
+		v.x *= c;
+		v.y *= c;
+		v.z *= c;
+	}
+
+	/**
 	 * Given a line segment from p0 >> p1, compute the relative location 
 	 * (p0 = 0 > p1 = 1) on this line where the distance to point q is minimal.
 	 * 
