@@ -8,6 +8,7 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import mpicbg.imglib.multithreading.SimpleMultiThreading;
 import net.imglib2.analyzesegmentation.wormfit.FirstInlierCells;
 import net.imglib2.analyzesegmentation.wormfit.InlierCell;
 import net.imglib2.analyzesegmentation.wormfit.InlierCells;
@@ -57,6 +58,8 @@ public class FindWormOutline
 				for ( int yi = -1; yi <= 1; ++yi )
 					for ( int xi = -1; xi <= 1; ++xi )
 					{
+						xi = yi = zi = 0;
+						
 						// compute the test vector
 						final Vector3f v = new Vector3f( d.x + xi * step, d.y + yi * step, d.z + zi * step );
 
@@ -68,6 +71,8 @@ public class FindWormOutline
 
 						// compute the quality of the fit
 						final InlierCells inliers = smallestRadius( sp, p, sr, cells );
+						inliers.visualizeInliers( univ, cells, new Color3f( 1, 0, 0 ) );
+						SimpleMultiThreading.threadHaltUnClean();
 					}
 		}
 		
@@ -76,15 +81,26 @@ public class FindWormOutline
 
 	protected InlierCells smallestRadius( final Point3f p0, final Point3f p1, final float r0, final Cells cells )
 	{
+		Color3f col = new Color3f( 1, 0, 0 );
 		InlierCells inliers = null;
+		InlierCells previous = null;
 
-		for ( float r1 = 0; r1 <= r0 * 2; r1 += 0.1f )
+		for ( float r1 = 0; r1 <= r0 * 2; r1 += 1.0f )
 		{
-			final InlierCells current = testGuess( p0, p1, r0, r1, cells );
+			InlierCells current = testGuess( p0, p1, r0, r1, cells );
+			if ( previous != null )
+				previous.unvisualizeInliers( univ, cells );
+			current.visualizeInliers( univ, cells, col );
+			previous = current;
+			SimpleMultiThreading.threadWait( 500 );
 
 			if ( inliers == null || inliers.getInlierCells().size() < current.getInlierCells().size() )
 				inliers = current;
+
+			System.out.println( r1 + ": " + inliers.getInlierCells().size() );
 		}
+
+		previous.unvisualizeInliers( univ, cells );
 
 		return inliers;
 	}
@@ -106,10 +122,15 @@ public class FindWormOutline
 			Algebra.shortestSquaredDistanceAndPoint( p0, p1, q, r );
 			final double dist = Math.sqrt( r[ 0 ] );
 			final double t = r[ 1 ];
-			
+
+			if ( cell.getId() == 5 )
+			{
+				System.out.println( "t:" + t + " d:" + dist + " d+r:" + (dist + cell.getRadius()) + " t:" + (r0 * ( 1- t) + r1 * t ) + " r0:" + r0 + " r1:" + r1 );
+			}
+
 			if ( t >= 0 && t <= 1 )
 			{
-				final double distThres = r0 * t + r1 * ( 1 - t );
+				final double distThres = r0 * (1 - t) + r1 * t;
 				
 				if ( dist + cell.getRadius() <= distThres )
 					inliers.add( new InlierCell( cell, dist, t ) );
