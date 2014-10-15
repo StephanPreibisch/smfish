@@ -8,10 +8,12 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import mpicbg.imglib.multithreading.SimpleMultiThreading;
 import net.imglib2.analyzesegmentation.wormfit.FirstInlierCells;
 import net.imglib2.analyzesegmentation.wormfit.InlierCell;
 import net.imglib2.analyzesegmentation.wormfit.InlierCells;
+import net.imglib2.analyzesegmentation.wormfit.Score;
+import net.imglib2.analyzesegmentation.wormfit.ScoreVolume;
+import net.imglib2.multithreading.SimpleMultiThreading;
 
 public class FindWormOutline
 {
@@ -20,7 +22,7 @@ public class FindWormOutline
 	final Cell cell0, cell1;
 	final float initialRadius;
 
-	protected float[] vectorStep = new float[]{ 20f, 10f, 5f, 2f, 1f, 0.5f };
+	protected float[] vectorStep = new float[]{ 40f, 30f, 20f, 15f, 10f, 7.5f, 5f, 3f, 2f, 1f, 0.5f };
 
 	public FindWormOutline( final Image3DUniverse univ, final Cells cells, final Cell cell0, final Cell cell1, final float initialRadius )
 	{
@@ -34,32 +36,48 @@ public class FindWormOutline
 	public void findOutline()
 	{
 		final Color3f inlierColor = new Color3f( 1, 0, 0 );
+		final Score score = new ScoreVolume();
 
 		InlierCells i1 = defineFirstCells( initialRadius );
 		i1.visualizeInliers( univ, cells, inlierColor );
 
-		InlierCells i2 = fitNextSegment( i1 );
-		i2.visualizeInliers( univ, cells, inlierColor );
+		InlierCells i = i1;
+		
+		int c = 0;
+		do
+		{
+			c++;
+			i = fitNextSegment( i, score );
+		}
+		while ( c < 2 && i.getR1() > 0 );
 	}
 
-	protected InlierCells fitNextSegment( final InlierCells previousInliers )
+	protected InlierCells fitNextSegment( final InlierCells previousInliers, final Score score )
 	{
 		// the initial radius and point are the last radius and point of the previous segment
 		final float sr = previousInliers.getR1();
-		final Point3f sp = previousInliers.getP1();
-		final Vector3f d = new Vector3f( sp.x - previousInliers.getP0().x, sp.y - previousInliers.getP0().y, sp.z - previousInliers.getP0().z );
+		final Vector3f d = new Vector3f(
+				previousInliers.getP1().x - previousInliers.getP0().x,
+				previousInliers.getP1().y - previousInliers.getP0().y,
+				previousInliers.getP1().z - previousInliers.getP0().z );
 		final float l = d.length();
+
+		final Point3f sp = new Point3f(
+				previousInliers.getP0().x + 0.9f * d.x,
+				previousInliers.getP0().y + 0.9f * d.y,
+				previousInliers.getP0().z + 0.9f * d.z );
+
+		InlierCells best = null;
 
 		for ( int stepIndex = 0; stepIndex < vectorStep.length; ++stepIndex )
 		{
 			final float step = vectorStep[ stepIndex ];
-			
+			System.out.println( step );
+
 			for ( int zi = -1; zi <= 1; ++zi )
 				for ( int yi = -1; yi <= 1; ++yi )
 					for ( int xi = -1; xi <= 1; ++xi )
 					{
-						xi = yi = zi = 0;
-						
 						// compute the test vector
 						final Vector3f v = new Vector3f( d.x + xi * step, d.y + yi * step, d.z + zi * step );
 
@@ -70,37 +88,42 @@ public class FindWormOutline
 						final Point3f p = new Point3f( sp.x + v.x, sp.y + v.y, sp.z + v.z );
 
 						// compute the quality of the fit
-						final InlierCells inliers = smallestRadius( sp, p, sr, cells );
-						inliers.visualizeInliers( univ, cells, new Color3f( 1, 0, 0 ) );
-						SimpleMultiThreading.threadHaltUnClean();
+						for ( float r1 = 0; r1 <= sr * 1.5f; r1 += 0.5f )
+						{
+							final InlierCells inliers = testGuess( sp, p, sr, r1, cells );
+	
+							if ( best == null || score.score( best ) < score.score( inliers ) )
+							{
+								if ( best != null )
+									best.unvisualizeInliers( univ, cells );
+	
+								best = inliers;
+								best.visualizeInliers( univ, cells, new Color3f( 1, 0, 0 ) );
+
+								System.out.println( r1 + " " + score.score( best ) + " " + best.getInlierCells().size() );
+								SimpleMultiThreading.threadWait( 250 );
+
+							}
+						}
+						
 					}
+			
 		}
-		
-		return null;
+		//SimpleMultiThreading.threadHaltUnClean();
+		return best;
 	}
 
 	protected InlierCells smallestRadius( final Point3f p0, final Point3f p1, final float r0, final Cells cells )
 	{
-		Color3f col = new Color3f( 1, 0, 0 );
 		InlierCells inliers = null;
-		InlierCells previous = null;
 
-		for ( float r1 = 0; r1 <= r0 * 2; r1 += 1.0f )
+		for ( float r1 = 0; r1 <= r0 * 1.5f; r1 += 1.0f )
 		{
 			InlierCells current = testGuess( p0, p1, r0, r1, cells );
-			if ( previous != null )
-				previous.unvisualizeInliers( univ, cells );
-			current.visualizeInliers( univ, cells, col );
-			previous = current;
-			SimpleMultiThreading.threadWait( 500 );
 
 			if ( inliers == null || inliers.getInlierCells().size() < current.getInlierCells().size() )
 				inliers = current;
-
-			System.out.println( r1 + ": " + inliers.getInlierCells().size() );
 		}
-
-		previous.unvisualizeInliers( univ, cells );
 
 		return inliers;
 	}
@@ -122,11 +145,6 @@ public class FindWormOutline
 			Algebra.shortestSquaredDistanceAndPoint( p0, p1, q, r );
 			final double dist = Math.sqrt( r[ 0 ] );
 			final double t = r[ 1 ];
-
-			if ( cell.getId() == 5 )
-			{
-				System.out.println( "t:" + t + " d:" + dist + " d+r:" + (dist + cell.getRadius()) + " t:" + (r0 * ( 1- t) + r1 * t ) + " r0:" + r0 + " r1:" + r1 );
-			}
 
 			if ( t >= 0 && t <= 1 )
 			{
