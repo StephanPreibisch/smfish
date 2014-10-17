@@ -22,7 +22,7 @@ public class FindWormOutline
 	final Cell cell0, cell1;
 	final float initialRadius;
 
-	protected float[] vectorStep = new float[]{ 40f, 30f, 20f, 15f, 10f, 7.5f, 5f, 3f, 2f, 1f, 0.5f };
+	protected float[] vectorStep = new float[]{ 40f, 30f, 20f, 15f, 10f, 7.5f, 5f, 2f, 1f };
 
 	public FindWormOutline( final Image3DUniverse univ, final Cells cells, final Cell cell0, final Cell cell1, final float initialRadius )
 	{
@@ -49,23 +49,24 @@ public class FindWormOutline
 			c++;
 			i = fitNextSegment( i, score );
 		}
-		while ( c < 2 && i.getR1() > 0 );
+		while ( c < 10 && i.getR1() > 0 );
 	}
 
 	protected InlierCells fitNextSegment( final InlierCells previousInliers, final Score score )
 	{
+		final Color3f c = new Color3f( 1, 0, 0 );
+
 		// the initial radius and point are the last radius and point of the previous segment
 		final float sr = previousInliers.getR1();
-		final Vector3f d = new Vector3f(
+
+		// the initial search vector
+		final Vector3f sv = new Vector3f(
 				previousInliers.getP1().x - previousInliers.getP0().x,
 				previousInliers.getP1().y - previousInliers.getP0().y,
 				previousInliers.getP1().z - previousInliers.getP0().z );
-		final float l = d.length();
+		final float refL = sv.length();
 
-		final Point3f sp = new Point3f(
-				previousInliers.getP0().x + 0.9f * d.x,
-				previousInliers.getP0().y + 0.9f * d.y,
-				previousInliers.getP0().z + 0.9f * d.z );
+		final Point3f sp = new Point3f( previousInliers.getP1() );
 
 		InlierCells best = null;
 
@@ -74,58 +75,61 @@ public class FindWormOutline
 			final float step = vectorStep[ stepIndex ];
 			System.out.println( step );
 
+			// the best search vector found so far
+			final Vector3f bestSV = new Vector3f( sv );
+
 			for ( int zi = -1; zi <= 1; ++zi )
 				for ( int yi = -1; yi <= 1; ++yi )
 					for ( int xi = -1; xi <= 1; ++xi )
 					{
 						// compute the test vector
-						final Vector3f v = new Vector3f( d.x + xi * step, d.y + yi * step, d.z + zi * step );
+						final Vector3f v = new Vector3f(
+								sv.x + xi * step,
+								sv.y + yi * step,
+								sv.z + zi * step );
 
 						// normalize it to the same length
-						Algebra.normalizeLength( v, l );
-
-						// compute the corresponding point
-						final Point3f p = new Point3f( sp.x + v.x, sp.y + v.y, sp.z + v.z );
-
-						// compute the quality of the fit
-						for ( float r1 = 0; r1 <= sr * 1.5f; r1 += 0.5f )
+						for ( float l = refL * 0.9f; l <= refL * 1.1; l += 1f )
 						{
-							final InlierCells inliers = testGuess( sp, p, sr, r1, cells );
+							Algebra.normalizeLength( v, l );
 	
-							if ( best == null || score.score( best ) < score.score( inliers ) )
-							{
-								if ( best != null )
-									best.unvisualizeInliers( univ, cells );
+							// compute the corresponding point
+							final Point3f p = new Point3f( sp.x + v.x, sp.y + v.y, sp.z + v.z );
 	
-								best = inliers;
-								best.visualizeInliers( univ, cells, new Color3f( 1, 0, 0 ) );
-
-								System.out.println( r1 + " " + score.score( best ) + " " + best.getInlierCells().size() );
-								SimpleMultiThreading.threadWait( 250 );
-
-							}
-						}
-						
-					}
+							// compute the quality of the fit
+							for ( float r0 = sr; r0 <= sr * 1.25f; r0 += 1f )
+								for ( float r1 = 0; r1 <= sr * 1.5f; r1 += 1f )
+								{
+									final InlierCells inliers = testGuess( sp, p, r0, r1, cells );
 			
+									if ( best == null || score.score( previousInliers, best ) < score.score( previousInliers, inliers ) )
+									{
+										if ( best != null )
+											best.unvisualizeInliers( univ, cells );
+	
+										if ( r0 != previousInliers.getR1() )
+										{
+											previousInliers.unvisualizeInliers( univ, cells );
+											previousInliers.setR1( r0 );
+											previousInliers.visualizeInliers( univ, cells, c );
+										}
+	
+										bestSV.set( v );
+										best = inliers;
+										best.visualizeInliers( univ, cells, c );
+		
+										System.out.println( step + ": l=" + l + " r0=" + r0 + " r1=" + r1 + " score=" + score.score( previousInliers, best ) + " |cells|=" + best.getInlierCells().size() );
+										SimpleMultiThreading.threadWait( 250 );
+									}
+								}
+						}
+					}
+
+			// update the search vector to the best solution from this scale
+			sv.set( bestSV );
 		}
 		//SimpleMultiThreading.threadHaltUnClean();
 		return best;
-	}
-
-	protected InlierCells smallestRadius( final Point3f p0, final Point3f p1, final float r0, final Cells cells )
-	{
-		InlierCells inliers = null;
-
-		for ( float r1 = 0; r1 <= r0 * 1.5f; r1 += 1.0f )
-		{
-			InlierCells current = testGuess( p0, p1, r0, r1, cells );
-
-			if ( inliers == null || inliers.getInlierCells().size() < current.getInlierCells().size() )
-				inliers = current;
-		}
-
-		return inliers;
 	}
 
 	protected InlierCells testGuess( final Point3f p0, final Point3f p1, final float r0, final float r1, final Cells cells )
