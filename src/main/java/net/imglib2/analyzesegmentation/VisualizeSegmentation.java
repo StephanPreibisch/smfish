@@ -3,9 +3,6 @@ package net.imglib2.analyzesegmentation;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +18,8 @@ import javax.media.j3d.TransformGroup;
 import javax.media.j3d.TransparencyAttributes;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
-import javax.vecmath.AxisAngle4d;
-import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,12 +31,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import bsh.commands.dir;
-
 import com.sun.j3d.utils.geometry.Sphere;
 
 import customnode.CustomPointMesh;
-import customnode.MeshMaker;
 import customnode.Mesh_Maker;
 
 public class VisualizeSegmentation
