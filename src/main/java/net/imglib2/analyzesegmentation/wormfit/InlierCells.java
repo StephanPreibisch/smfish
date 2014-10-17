@@ -23,7 +23,7 @@ public class InlierCells
 	final protected static AtomicInteger counter = new AtomicInteger();
 
 	final List< InlierCell > inliers;
-	final float r0, r1;
+	float r0, r1;
 	final Point3f p0, p1;
 
 	float vectorTransparency = 0.5f;
@@ -48,6 +48,9 @@ public class InlierCells
 	public float getR1() { return r1; }
 	public Point3f getP0() { return p0; }
 	public Point3f getP1() { return p1; }
+
+	public void setR0( final float r0 ) { this.r0 = r0; }
+	public void setR1( final float r1 ) { this.r1 = r1; }
 
 	public void visualizeInliers( final Image3DUniverse univ, final Cells cells, final Color3f inlierColor )
 	{
