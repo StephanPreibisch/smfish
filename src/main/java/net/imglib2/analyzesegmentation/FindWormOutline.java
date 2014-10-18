@@ -14,7 +14,6 @@ import net.imglib2.analyzesegmentation.wormfit.InlierCell;
 import net.imglib2.analyzesegmentation.wormfit.InlierCells;
 import net.imglib2.analyzesegmentation.wormfit.Score;
 import net.imglib2.analyzesegmentation.wormfit.ScoreVolume;
-import net.imglib2.collection.KDTree;
 import net.imglib2.multithreading.SimpleMultiThreading;
 import net.imglib2.neighborsearch.RadiusNeighborSearchOnKDTree;
 
@@ -25,7 +24,7 @@ public class FindWormOutline
 	final Cell cell0, cell1;
 	final float initialRadius;
 
-	protected float[] vectorStep = new float[]{ 20f, 15f, 10f, 5f, 2f, 1f };
+	protected float[] vectorStep = new float[]{ /*20f, */ 20f, 10f, 5f, 2f, 1f };
 
 	public FindWormOutline( final Image3DUniverse univ, final Cells cells, final Cell cell0, final Cell cell1, final float initialRadius )
 	{
@@ -50,9 +49,11 @@ public class FindWormOutline
 		do
 		{
 			c++;
+			System.out.print( "segment=" + c );
 			i = fitNextSegment( i, score );
+			System.out.println( ": " + i.getR0() + " " + i.getR1() );
 		}
-		while ( c < 10 && i.getR1() > 0 );
+		while ( c < 1000 && i.getR1() > 0 );
 	}
 
 	protected InlierCells fitNextSegment( final InlierCells previousInliers, final Score score )
@@ -70,7 +71,7 @@ public class FindWormOutline
 		final float refL;
 
 		if ( FirstInlierCells.class.isInstance( previousInliers ) )
-			refL = sv.length();
+			refL = sv.length() * 2f;
 		else
 			refL = sv.length() * 3;
 
@@ -81,7 +82,7 @@ public class FindWormOutline
 		for ( int stepIndex = 0; stepIndex < vectorStep.length; ++stepIndex )
 		{
 			final float step = vectorStep[ stepIndex ];
-			System.out.println( step );
+			//System.out.println( step );
 
 			// the best search vector found so far
 			final Vector3f bestSV = new Vector3f( sv );
@@ -97,7 +98,8 @@ public class FindWormOutline
 								sv.z + zi * step );
 
 						// normalize it to the same length
-						for ( float l = refL * 0.9f; l <= refL * 1.1; l += 1f )
+						final float l = refL;
+						//for ( float l = refL * 0.9f; l <= refL * 1.1; l += 1f )
 						{
 							Algebra.normalizeLength( v, l );
 	
@@ -126,8 +128,8 @@ public class FindWormOutline
 										best = inliers;
 										best.visualizeInliers( univ, cells, c );
 		
-										System.out.println( step + ": l=" + l + " r0=" + r0 + " r1=" + r1 + " score=" + score.score( previousInliers, best ) + " |cells|=" + best.getInlierCells().size() );
-										SimpleMultiThreading.threadWait( 100 );
+										//System.out.println( step + ": l=" + l + " r0=" + r0 + " r1=" + r1 + " score=" + score.score( previousInliers, best ) + " |cells|=" + best.getInlierCells().size() );
+										SimpleMultiThreading.threadWait( 25 );
 									}
 								}
 						}

@@ -48,7 +48,8 @@ public class VisualizeSegmentation
 	{
 		this.fileChooser = createFileChooser();
 
-		if ( this.loadAnnotations() )
+		// TODO: remove correction for wrong calibration
+		if ( this.loadAnnotations( 1.6 ) )
 		{
 			final Image3DUniverse univ = VisualizeBeads.initUniverse();
 
@@ -279,7 +280,7 @@ public class VisualizeSegmentation
 		return null;
 	}
 
-	protected synchronized boolean loadAnnotations()
+	protected synchronized boolean loadAnnotations( final double scaleZ )
 	{
 		if ( defaultXML != null )
 		{
@@ -310,6 +311,9 @@ public class VisualizeSegmentation
 				for ( int i = 0; i < nodes.getLength(); ++i )
 				{
 					final Cell cell = Cell.fromXml( ( Element ) nodes.item( i ) );
+					
+					cell.getPosition().setPosition( cell.getDoublePosition( 2 ) * scaleZ, 2 );
+					
 					cells.getCells().put( cell.getId(), cell );
 					if ( cell.getId() >= nextCellId )
 						nextCellId = cell.getId() + 1;
