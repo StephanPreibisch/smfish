@@ -68,7 +68,7 @@ public class VisualizeSegmentation
 			}
 			while ( dicv.getSphere2() == null );
 
-			final FindWormOutline fwo = new FindWormOutline( univ, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()), 20 );
+			final FindWormOutline fwo = new FindWormOutline( univ, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()), 25 );
 			fwo.findOutline();
 
 			//System.exit( 0 );

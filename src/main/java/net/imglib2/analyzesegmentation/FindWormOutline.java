@@ -109,7 +109,7 @@ public class FindWormOutline
 							// compute the quality of the fit
 							//final float r0 = sr;
 							for ( float r0 = sr * 0.9f; r0 <= sr * 1.1f; r0 += 0.75f )
-								for ( float r1 = 0; r1 <= sr * 1.5f; r1 += 1f )
+								for ( float r1 = 0; r1 <= sr * 1.4f; r1 += 1f )
 								{
 									final InlierCells inliers = testGuess( sp, p, r0, r1, cells );
 			
