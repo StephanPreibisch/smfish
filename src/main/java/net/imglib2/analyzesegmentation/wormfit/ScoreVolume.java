@@ -16,12 +16,15 @@ public class ScoreVolume implements Score
 	@Override
 	public double score( final InlierCells previous, final InlierCells cells )
 	{
+		// good
+		final double nc = cells.inliers.size();
+
+		// bad
 		final double vd = vectorDifference( previous, cells );
 		final double rd = cells.getR1() - cells.getR0();
 		final double vol = volume( cells );
 		
-		return ( 4 * cells.inliers.size() * cells.inliers.size() * cells.inliers.size() ) / 
-			( vol/2 + rd*rd + 10 *vd );
+		return ( 4 * nc * nc * nc ) / ( vol + rd*rd + 10 *vd );
 	}
 
 	protected double vectorDifference( final InlierCells previous, final InlierCells cells )

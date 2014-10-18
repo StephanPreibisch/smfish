@@ -53,7 +53,7 @@ public class FindWormOutline
 			i = fitNextSegment( i, score );
 			System.out.println( ": " + i.getR0() + " " + i.getR1() );
 		}
-		while ( c < 1000 && i.getR1() > 0 );
+		while ( c < 1000 && i.getR1() > 0.1 );
 	}
 
 	protected InlierCells fitNextSegment( final InlierCells previousInliers, final Score score )
@@ -107,7 +107,8 @@ public class FindWormOutline
 							final Point3f p = new Point3f( sp.x + v.x, sp.y + v.y, sp.z + v.z );
 	
 							// compute the quality of the fit
-							for ( float r0 = sr; r0 <= sr * 1.25f; r0 += 1f )
+							//final float r0 = sr;
+							for ( float r0 = sr * 0.9f; r0 <= sr * 1.1f; r0 += 0.75f )
 								for ( float r1 = 0; r1 <= sr * 1.5f; r1 += 1f )
 								{
 									final InlierCells inliers = testGuess( sp, p, r0, r1, cells );
