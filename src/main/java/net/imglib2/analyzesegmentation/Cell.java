@@ -7,7 +7,7 @@ import net.imglib2.util.Util;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class Cell
+public class Cell implements RealLocalizable
 {
 	private final int id;
 
@@ -86,4 +86,18 @@ public class Cell
 		return e;
 	}
 
+	@Override
+	public int numDimensions() { return 3; }
+
+	@Override
+	public void localize( final float[] position ) { this.position.localize( position ); }
+
+	@Override
+	public void localize( final double[] position ) { this.position.localize( position ); }
+
+	@Override
+	public float getFloatPosition( final int d ) { return this.position.getFloatPosition( d ); }
+
+	@Override
+	public double getDoublePosition( final int d ) { return this.position.getDoublePosition( d ); }
 }
