@@ -43,11 +43,10 @@ public class FindWormOutline
 
 	public void findOutline()
 	{
-		final Color3f inlierColor = new Color3f( 1, 0, 0 );
 		final Score score = new ScoreVolume();
 
 		InlierCells i1 = defineFirstCells( initialRadius );
-		i1.visualizeInliers( univ, cells, inlierColor );
+		i1.visualizeInliers( univ, cells, false, true, false );
 
 		InlierCells i = i1;
 		
@@ -59,13 +58,14 @@ public class FindWormOutline
 			i = fitNextSegment( i, score, 3, c );
 			System.out.println( ": " + i.getR0() + " " + i.getR1() );
 		}
-		while ( c < 40 && i.getR1() > 0.1 );
+		while ( c < 39 && i.getR1() > 0.1 );
+
+		SimpleMultiThreading.threadWait( 250 );
+		makeScreenshot( c + 1 );
 	}
 
 	protected InlierCells fitNextSegment( final InlierCells previousInliers, final Score score, final float cutLength, final int sementCount )
 	{
-		final Color3f c = new Color3f( 1, 0, 0 );
-
 		// the initial radius and point are the last radius and point of the previous segment
 		final float sr = previousInliers.getR1();
 
@@ -93,6 +93,7 @@ public class FindWormOutline
 			// the best search vector found so far
 			final Vector3f bestSV = new Vector3f( sv );
 
+			// TODO: Remove manual stopping
 			int from, to;
 
 			if ( sementCount < 38 )
@@ -133,8 +134,8 @@ public class FindWormOutline
 			
 									if ( best == null || score.score( previousInliers, best ) < score.score( previousInliers, inliers ) )
 									{
-										if ( best != null )
-											best.unvisualizeInliers( univ, cells );
+										//if ( best != null )
+										//	best.unvisualizeInliers( univ, cells );
 	
 										if ( r0 != previousInliers.getR1() )
 										{
@@ -158,6 +159,9 @@ public class FindWormOutline
 			sv.set( bestSV );
 		}
 
+		InlierCells preCut = best;
+		preCut.visualizeInliers( univ, cells, true, false, false );
+
 		//
 		// only take 1/3 of the vector
 		//
@@ -173,11 +177,13 @@ public class FindWormOutline
 				best.getP0().y + v.y,
 				best.getP0().z + v.z );
 
-		best.unvisualizeInliers( univ, cells );
+		//best.unvisualizeInliers( univ, cells );
 		best = testGuess( best.getP0(), p1, best.getR0(), best.getR0() * (1.0f - 1.0f/cutLength) + best.getR1() * (1.0f/cutLength), cells );
-		best.visualizeInliers( univ, cells, c );
+		best.visualizeInliers( univ, cells, false, true, false );
 
 		SimpleMultiThreading.threadWait( 250 );
+		makeScreenshot( sementCount );
+		preCut.unvisualizeInliers( univ, cells );
 		//SimpleMultiThreading.threadHaltUnClean();
 
 		return best;

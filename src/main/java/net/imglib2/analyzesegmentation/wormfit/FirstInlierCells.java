@@ -4,7 +4,6 @@ import ij3d.Image3DUniverse;
 
 import java.util.List;
 
-import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -21,14 +20,14 @@ public class FirstInlierCells extends InlierCells
 	 * Draw an elgonated tail for esthetic reasons
 	 */
 	@Override
-	public void visualizeInliers( final Image3DUniverse univ, final Cells cells, final Color3f inlierColor )
+	public void visualizeInliers( final Image3DUniverse univ, final Cells cells, final boolean colorInliers, final boolean drawLine, final boolean drawCone )
 	{
 		final Point3f saveP0 = new Point3f( p0 );
 		final Vector3f v0 = new Vector3f( p1.x - p0.x, p1.y - p0.y, p1.z - p0.z );
-		p0.sub( v0 );
-		p0.sub( v0 );
+		//p0.sub( v0 );
+		//p0.sub( v0 );
 
-		super.visualizeInliers( univ, cells, inlierColor );
+		super.visualizeInliers( univ, cells, colorInliers, drawLine, drawCone );
 
 		this.p0.set( saveP0 );
 	}

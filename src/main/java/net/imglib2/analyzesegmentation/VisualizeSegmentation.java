@@ -70,7 +70,7 @@ public class VisualizeSegmentation
 			while ( dicv.getSphere2() == null );
 
 			rcc.setActive( false );
-			FindWormOutline.makeScreenshot( new Rectangle( 0, 0, 1024, 768), 0 );
+			FindWormOutline.makeScreenshot( 0 );
 
 			final FindWormOutline fwo = new FindWormOutline( univ, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()), 25 );
 			fwo.findOutline();
@@ -238,8 +238,8 @@ public class VisualizeSegmentation
 
 			for ( int d = 0; d < min.length; ++d )
 			{
-				min[ d ] = Math.min( min[ d ], cell.getPosition().getFloatPosition( d ) );
-				max[ d ] = Math.max( max[ d ], cell.getPosition().getFloatPosition( d ) );
+				min[ d ] = Math.min( min[ d ], cell.getPosition().getFloatPosition( d ) - 50 );
+				max[ d ] = Math.max( max[ d ], cell.getPosition().getFloatPosition( d ) + 50 );
 			}
 		}
 

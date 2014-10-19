@@ -18,6 +18,8 @@ import net.imglib2.analyzesegmentation.VisualizeSegmentation;
 
 import com.sun.j3d.utils.geometry.Sphere;
 
+import customnode.CustomLineMesh;
+
 public class InlierCells
 {
 	final protected static AtomicInteger counter = new AtomicInteger();
@@ -26,9 +28,12 @@ public class InlierCells
 	float r0, r1;
 	final Point3f p0, p1;
 
-	float vectorTransparency = 0.5f;
-	float truncatedConeTransparency = 0.75f;
-	Color3f truncatedConeColor = new Color3f( 0, 0, 0 );
+	public Color3f inlierCol = new Color3f( 1, 0, 0 );
+	public Color3f vectorCol = new Color3f( 1, 0, 0 );
+	public float vectorTransparency = 0.5f;
+	public float linewidth = 4f;
+	public Color3f truncatedConeColor = new Color3f( 0, 0, 0 );
+	public float truncatedConeTransparency = 0.75f;
 
 	HashMap< Integer, Color3f > oldColors;
 	Content vector;
@@ -52,10 +57,10 @@ public class InlierCells
 	public void setR0( final float r0 ) { this.r0 = r0; }
 	public void setR1( final float r1 ) { this.r1 = r1; }
 
-	public void visualizeInliers( final Image3DUniverse univ, final Cells cells, final Color3f inlierColor )
+	public void visualizeInliers( final Image3DUniverse univ, final Cells cells, final boolean colorInliers, final boolean drawLine, final boolean drawCone )
 	{
 		// color inliers
-		if ( inlierColor != null )
+		if ( colorInliers )
 		{
 			boolean saveColors = false;
 
@@ -77,7 +82,7 @@ public class InlierCells
 					this.oldColors.put( id, c );
 				}
 				
-				s.getAppearance().getColoringAttributes().setColor( inlierColor );
+				s.getAppearance().getColoringAttributes().setColor( inlierCol );
 			}
 		}
 
@@ -85,16 +90,24 @@ public class InlierCells
 		if ( this.vector != null )
 			univ.removeContent( this.vector.getName() );
 
-		this.vector = VisualizeSegmentation.drawLine( univ, p0, p1, "segment " + counter.getAndIncrement() );
-		this.vector.setTransparency( vectorTransparency );
-
+		if ( drawLine )
+		{
+			this.vector = VisualizeSegmentation.drawLine( univ, p0, p1, "segment " + counter.getAndIncrement() );
+			this.vector.setTransparency( vectorTransparency );
+			this.vector.setColor( vectorCol );
+			((CustomLineMesh)this.vector.getContent().getChild( 0 )).setLineWidth( linewidth );
+		}
+		
 		// draw the truncated cone
-		final Vector3f v0 = new Vector3f( p1.x - p0.x, p1.y - p0.y, p1.z - p0.z );
-
-		final Point3f pc0 = new Point3f( 0, -v0.length()/2, 0 );
-		final Point3f pc1 = new Point3f( 0, v0.length()/2, 0 );
-
-		this.truncatedCone = VisualizeSegmentation.drawTruncatedCone( r0, r1, v0.length(), univ, Algebra.getTransformation( pc0, pc1, p0, p1, false ), truncatedConeColor, truncatedConeTransparency );
+		if ( drawCone )
+		{
+			final Vector3f v0 = new Vector3f( p1.x - p0.x, p1.y - p0.y, p1.z - p0.z );
+	
+			final Point3f pc0 = new Point3f( 0, -v0.length()/2, 0 );
+			final Point3f pc1 = new Point3f( 0, v0.length()/2, 0 );
+	
+			this.truncatedCone = VisualizeSegmentation.drawTruncatedCone( r0, r1, v0.length(), univ, Algebra.getTransformation( pc0, pc1, p0, p1, false ), truncatedConeColor, truncatedConeTransparency );
+		}
 	}
 
 	public void unvisualizeInliers( final Image3DUniverse univ, final Cells cells )
