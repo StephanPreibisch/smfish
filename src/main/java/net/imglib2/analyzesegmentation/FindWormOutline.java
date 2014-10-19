@@ -58,8 +58,10 @@ public class FindWormOutline
 			i = fitNextSegment( i, score, 3, c );
 			System.out.println( ": " + i.getR0() + " " + i.getR1() );
 		}
-		while ( c < 39 && i.getR1() > 0.1 );
+		while ( c < 27 && i.getR1() > 0.1 );
 
+		// worm43:c=39
+		
 		SimpleMultiThreading.threadWait( 250 );
 		makeScreenshot( c + 1 );
 	}
@@ -96,7 +98,7 @@ public class FindWormOutline
 			// TODO: Remove manual stopping
 			int from, to;
 
-			if ( sementCount < 38 )
+			if ( sementCount < 26 )
 			{
 				from = -1;
 				to = 1;
@@ -184,7 +186,6 @@ public class FindWormOutline
 		SimpleMultiThreading.threadWait( 250 );
 		makeScreenshot( sementCount );
 		preCut.unvisualizeInliers( univ, cells );
-		//SimpleMultiThreading.threadHaltUnClean();
 
 		return best;
 	}

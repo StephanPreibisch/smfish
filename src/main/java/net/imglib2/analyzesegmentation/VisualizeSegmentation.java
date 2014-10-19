@@ -39,7 +39,7 @@ import customnode.Mesh_Maker;
 
 public class VisualizeSegmentation
 {
-	public static String defaultXML = "/Users/preibischs/Documents/Microscopy/smFISH/samidouble_43_reconstructed.cells.xml";
+	public static String defaultXML = "/Users/preibischs/Documents/Microscopy/smFISH/samidouble_41_reconstructed.cells.xml";
 
 	final JFileChooser fileChooser;
 	final Cells cells = new Cells();
