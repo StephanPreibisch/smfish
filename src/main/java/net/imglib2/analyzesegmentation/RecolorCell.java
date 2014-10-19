@@ -23,11 +23,14 @@ public class RecolorCell implements MouseMotionListener
 	Sphere currentSphere = null;
 	Color3f currentColor = new Color3f();
 
+	boolean active;
+
 	public RecolorCell( final Image3DUniverse univ, final Color3f colorActive )
 	{
 		this.univ = univ;
 		this.colorActive = colorActive;
 		this.pickCanvas = new PickCanvas( (ImageCanvas3D)univ.getCanvas(), univ.getScene() );
+		this.active = true;
 
 		pickCanvas.setMode( PickInfo.PICK_GEOMETRY );
 		pickCanvas.setFlags( PickInfo.SCENEGRAPHPATH | PickInfo.CLOSEST_INTERSECTION_POINT );
@@ -36,6 +39,16 @@ public class RecolorCell implements MouseMotionListener
 
 	public Sphere getCurrentSphere() { return currentSphere; }
 	public Color3f getCurrentColor() { return currentColor; }
+	public void setActive( final boolean active )
+	{ 
+		this.active = active;
+
+		if ( currentSphere != null )
+		{
+			currentSphere.getAppearance().getColoringAttributes().setColor( currentColor );
+			currentSphere = null;
+		}
+	}
 
 	@Override
 	public void mouseMoved( final MouseEvent arg0 ) { testLocation( arg0.getPoint().x, arg0.getPoint().y ); }

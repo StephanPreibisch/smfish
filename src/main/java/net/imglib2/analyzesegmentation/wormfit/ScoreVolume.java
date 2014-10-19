@@ -23,8 +23,11 @@ public class ScoreVolume implements Score
 		final double vd = vectorDifference( previous, cells );
 		final double rd = cells.getR1() - cells.getR0();
 		final double vol = volume( cells );
-		
-		return ( 4 * nc * nc * nc ) / ( vol + rd*rd + 10 *vd );
+
+		// making smaller is good, bigger not
+		final double rf = rd < 0 ? 0.1 : 10;
+			
+		return ( 4 * nc * nc * nc ) / ( vol + rf*rd*rd + 10*vd );
 	}
 
 	protected double vectorDifference( final InlierCells previous, final InlierCells cells )

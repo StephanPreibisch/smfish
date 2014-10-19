@@ -2,8 +2,14 @@ package net.imglib2.analyzesegmentation;
 
 import ij3d.Image3DUniverse;
 
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -50,13 +56,13 @@ public class FindWormOutline
 		{
 			c++;
 			System.out.print( "segment=" + c );
-			i = fitNextSegment( i, score );
+			i = fitNextSegment( i, score, 3 );
 			System.out.println( ": " + i.getR0() + " " + i.getR1() );
 		}
 		while ( c < 1000 && i.getR1() > 0.1 );
 	}
 
-	protected InlierCells fitNextSegment( final InlierCells previousInliers, final Score score )
+	protected InlierCells fitNextSegment( final InlierCells previousInliers, final Score score, final float cutLength )
 	{
 		final Color3f c = new Color3f( 1, 0, 0 );
 
@@ -73,7 +79,7 @@ public class FindWormOutline
 		if ( FirstInlierCells.class.isInstance( previousInliers ) )
 			refL = sv.length() * 2f;
 		else
-			refL = sv.length() * 3;
+			refL = sv.length() * cutLength;
 
 		final Point3f sp = new Point3f( previousInliers.getP1() );
 
@@ -120,17 +126,17 @@ public class FindWormOutline
 	
 										if ( r0 != previousInliers.getR1() )
 										{
-											previousInliers.unvisualizeInliers( univ, cells );
+											//previousInliers.unvisualizeInliers( univ, cells );
 											previousInliers.setR1( r0 );
-											previousInliers.visualizeInliers( univ, cells, c );
+											//previousInliers.visualizeInliers( univ, cells, c );
 										}
 	
 										bestSV.set( v );
 										best = inliers;
-										best.visualizeInliers( univ, cells, c );
+										//best.visualizeInliers( univ, cells, c );
 		
 										//System.out.println( step + ": l=" + l + " r0=" + r0 + " r1=" + r1 + " score=" + score.score( previousInliers, best ) + " |cells|=" + best.getInlierCells().size() );
-										SimpleMultiThreading.threadWait( 25 );
+										//SimpleMultiThreading.threadWait( 25 );
 									}
 								}
 						}
@@ -148,7 +154,7 @@ public class FindWormOutline
 				best.getP1().y - best.getP0().y,
 				best.getP1().z - best.getP0().z );
 
-		Algebra.normalizeLength( v, v.length() / 3.0f );
+		Algebra.normalizeLength( v, v.length() / cutLength );
 		
 		final Point3f p1 = new Point3f(
 				best.getP0().x + v.x,
@@ -156,7 +162,7 @@ public class FindWormOutline
 				best.getP0().z + v.z );
 
 		best.unvisualizeInliers( univ, cells );
-		best = testGuess( best.getP0(), p1, best.getR0(), best.getR0() * 2.0f/3.0f + best.getR1() * 1.0f/3.0f, cells );
+		best = testGuess( best.getP0(), p1, best.getR0(), best.getR0() * (1.0f - 1.0f/cutLength) + best.getR1() * (1.0f/cutLength), cells );
 		best.visualizeInliers( univ, cells, c );
 
 		SimpleMultiThreading.threadWait( 250 );
@@ -221,5 +227,24 @@ public class FindWormOutline
 		inliers.add( new InlierCell( cell1, 0, 1 ) );
 
 		return new FirstInlierCells( inliers, 0, initialRadius, p0, p1 );
+	}
+
+	public static void makeScreenshot( final int index )
+	{
+		makeScreenshot( new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()), index);
+	}
+
+	public static void makeScreenshot( final Rectangle rect, final int index )
+	{
+		try
+		{
+			BufferedImage image = new Robot().createScreenCapture( rect );
+			ImageIO.write( image, "png", new File( "screenshot_" + index + ".png" ) );
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

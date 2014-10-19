@@ -3,6 +3,7 @@ package net.imglib2.analyzesegmentation;
 import ij3d.Content;
 import ij3d.Image3DUniverse;
 
+import java.awt.Rectangle;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,9 @@ public class VisualizeSegmentation
 				SimpleMultiThreading.threadWait( 100 );
 			}
 			while ( dicv.getSphere2() == null );
+
+			rcc.setActive( false );
+			FindWormOutline.makeScreenshot( new Rectangle( 0, 0, 1024, 768), 0 );
 
 			final FindWormOutline fwo = new FindWormOutline( univ, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()), 25 );
 			fwo.findOutline();
