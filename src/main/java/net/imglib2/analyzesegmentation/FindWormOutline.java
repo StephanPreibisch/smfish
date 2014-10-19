@@ -56,13 +56,13 @@ public class FindWormOutline
 		{
 			c++;
 			System.out.print( "segment=" + c );
-			i = fitNextSegment( i, score, 3 );
+			i = fitNextSegment( i, score, 3, c );
 			System.out.println( ": " + i.getR0() + " " + i.getR1() );
 		}
-		while ( c < 1000 && i.getR1() > 0.1 );
+		while ( c < 40 && i.getR1() > 0.1 );
 	}
 
-	protected InlierCells fitNextSegment( final InlierCells previousInliers, final Score score, final float cutLength )
+	protected InlierCells fitNextSegment( final InlierCells previousInliers, final Score score, final float cutLength, final int sementCount )
 	{
 		final Color3f c = new Color3f( 1, 0, 0 );
 
@@ -93,9 +93,21 @@ public class FindWormOutline
 			// the best search vector found so far
 			final Vector3f bestSV = new Vector3f( sv );
 
-			for ( int zi = -1; zi <= 1; ++zi )
-				for ( int yi = -1; yi <= 1; ++yi )
-					for ( int xi = -1; xi <= 1; ++xi )
+			int from, to;
+
+			if ( sementCount < 38 )
+			{
+				from = -1;
+				to = 1;
+			}
+			else
+			{
+				from = to = 0;
+			}
+
+			for ( int zi = from; zi <= to; ++zi )
+				for ( int yi = from; yi <= to; ++yi )
+					for ( int xi = from; xi <= to; ++xi )
 					{
 						// compute the test vector
 						final Vector3f v = new Vector3f(
