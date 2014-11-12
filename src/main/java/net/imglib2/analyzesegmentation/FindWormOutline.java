@@ -58,9 +58,10 @@ public class FindWormOutline
 			i = fitNextSegment( i, score, 3, c );
 			System.out.println( ": " + i.getR0() + " " + i.getR1() );
 		}
-		while ( c < 27 && i.getR1() > 0.1 );
+		while ( c < 37 && i.getR1() > 0.1 );
 
 		// worm43:c=39
+		// worm41:c=27
 		
 		SimpleMultiThreading.threadWait( 250 );
 		makeScreenshot( c + 1 );
@@ -98,7 +99,7 @@ public class FindWormOutline
 			// TODO: Remove manual stopping
 			int from, to;
 
-			if ( sementCount < 26 )
+			if ( sementCount < 35 )
 			{
 				from = -1;
 				to = 1;
@@ -161,8 +162,8 @@ public class FindWormOutline
 			sv.set( bestSV );
 		}
 
-		InlierCells preCut = best;
-		preCut.visualizeInliers( univ, cells, true, false, false );
+		//InlierCells preCut = best;
+		//preCut.visualizeInliers( univ, cells, true, false, false );
 
 		//
 		// only take 1/3 of the vector
@@ -181,11 +182,11 @@ public class FindWormOutline
 
 		//best.unvisualizeInliers( univ, cells );
 		best = testGuess( best.getP0(), p1, best.getR0(), best.getR0() * (1.0f - 1.0f/cutLength) + best.getR1() * (1.0f/cutLength), cells );
-		best.visualizeInliers( univ, cells, false, true, false );
+		best.visualizeInliers( univ, cells, true, true, true );
 
 		SimpleMultiThreading.threadWait( 250 );
-		makeScreenshot( sementCount );
-		preCut.unvisualizeInliers( univ, cells );
+		//makeScreenshot( sementCount );
+		//preCut.unvisualizeInliers( univ, cells );
 
 		return best;
 	}

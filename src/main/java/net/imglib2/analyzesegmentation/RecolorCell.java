@@ -7,12 +7,17 @@ import ij3d.Image3DUniverse;
 import ij3d.ImageCanvas3D;
 
 import javax.media.j3d.Node;
-import javax.media.j3d.PickInfo;
+
+import com.sun.j3d.utils.picking.PickCanvas;
+import com.sun.j3d.utils.picking.PickResult;
+import com.sun.j3d.utils.picking.PickTool;
+
+//import javax.media.j3d.PickInfo;
 import javax.media.j3d.SceneGraphPath;
 import javax.vecmath.Color3f;
 
 import com.sun.j3d.utils.geometry.Sphere;
-import com.sun.j3d.utils.pickfast.PickCanvas;
+//import com.sun.j3d.utils.pickfast.PickCanvas;
 
 public class RecolorCell implements MouseMotionListener
 {
@@ -32,8 +37,8 @@ public class RecolorCell implements MouseMotionListener
 		this.pickCanvas = new PickCanvas( (ImageCanvas3D)univ.getCanvas(), univ.getScene() );
 		this.active = true;
 
-		pickCanvas.setMode( PickInfo.PICK_GEOMETRY );
-		pickCanvas.setFlags( PickInfo.SCENEGRAPHPATH | PickInfo.CLOSEST_INTERSECTION_POINT );
+		pickCanvas.setMode( PickTool.GEOMETRY );
+		//pickCanvas.setFlags( PickInfo.SCENEGRAPHPATH | PickInfo.CLOSEST_INTERSECTION_POINT );
 		pickCanvas.setTolerance( 0 );
 	}
 
@@ -60,7 +65,7 @@ public class RecolorCell implements MouseMotionListener
 	{
 		pickCanvas.setShapeLocation( x, y );
 
-		final PickInfo info = pickCanvas.pickClosest();
+		final PickResult info = pickCanvas.pickClosest();
 
 		if ( info == null )
 		{

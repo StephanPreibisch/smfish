@@ -148,7 +148,7 @@ public class VisualizeSegmentation
 			s.setCapability( Sphere.ENABLE_APPEARANCE_MODIFY );
 			s.getShape().setCapability( Shape3D.ALLOW_APPEARANCE_WRITE );
 			transformGroup.addChild( s );
-			s.setName( "nucleus " + cell.getId() );
+			//s.setName( "nucleus " + cell.getId() );
 			s.setUserData( cell );
 
 			// store the link between cell and sphere
@@ -370,6 +370,7 @@ public class VisualizeSegmentation
 
 	public static void main( String[] args )
 	{
+		System.out.println( "Java: " + System.getProperty( "java.version" ) );
 		final Point3f p0 = new Point3f( 0, 0, 0 );
 		final Point3f p1 = new Point3f( 2, 0, 0 );
 		final Point3f q = new Point3f( 0.9f, 1, 0 );
