@@ -17,6 +17,7 @@ import mpicbg.spim.io.TextFileAccess;
 import net.imglib2.drift.fit.Line;
 import net.imglib2.drift.fit.PointFunctionMatch;
 import plugin.DescriptorParameters;
+import plugin.Descriptor_based_series_registration;
 import process.Matching;
 
 public class CorrectDrift
@@ -28,9 +29,10 @@ public class CorrectDrift
 		System.out.println( new File ( dir, file ).getAbsolutePath() );
 
 		final File driftFile = new File ( dir, file + driftExt );
+		ImagePlus imp = null;
 
 		if ( !driftFile.exists() )
-			computeIndividualDrifts( dir, file, numChannels );
+			imp = computeIndividualDrifts( dir, file, numChannels );
 
 		final float[] driftsX = loadDrifts( driftFile, 1 );
 		final float[] driftsY = loadDrifts( driftFile, 2 );
@@ -52,10 +54,27 @@ public class CorrectDrift
 		}
 
 		// fuse
-		
+		if ( imp == null )
+			imp = load( dir, file, numChannels );
+
+		fuse( models, imp );
+
+		if ( imp != null )
+			imp.close();
 	}
 
-	public static ArrayList< InvertibleBoundable > createModels( final Line lx, final Line ly, final int from, final int to )
+	protected void fuse( final ArrayList< InvertibleBoundable > models, final ImagePlus imp )
+	{
+
+		Descriptor_based_series_registration.lastModels = models;
+		DescriptorParameters params = getParameters( 1 );
+		params.reApply = true;
+		params.fuse = 0;
+
+		Matching.descriptorBasedStackRegistration( imp, params );
+	}
+
+	protected ArrayList< InvertibleBoundable > createModels( final Line lx, final Line ly, final int from, final int to )
 	{
 		final ArrayList< InvertibleBoundable > list = new ArrayList< InvertibleBoundable >();
 
@@ -137,14 +156,9 @@ public class CorrectDrift
 		return d;
 	}
 
-	protected void computeIndividualDrifts( final String dir, final String file, final int numChannels )
+	protected ImagePlus computeIndividualDrifts( final String dir, final String file, final int numChannels )
 	{
-		ImagePlus imp = new ImagePlus( new File( dir, file ).getAbsolutePath() );
-		
-		final int numTimePoints = imp.getStackSize() / numChannels;
-		imp.setDimensions( numChannels, 1, numTimePoints );
-		imp = makeComposite( imp, CompositeImage.COMPOSITE );
-
+		final ImagePlus imp = load( dir, file, numChannels );
 		final ArrayList<InvertibleBoundable> models = Matching.descriptorBasedStackRegistration( imp, getParameters( 1 ) );
 		final float[] t = new float[ 2 ];
 
@@ -161,7 +175,19 @@ public class CorrectDrift
 		}
 
 		out.close();
-		imp.close();
+
+		return imp;
+	}
+
+	protected ImagePlus load( final String dir, final String file, final int numChannels )
+	{
+		ImagePlus imp = new ImagePlus( new File( dir, file ).getAbsolutePath() );
+
+		final int numTimePoints = imp.getStackSize() / numChannels;
+		imp.setDimensions( numChannels, 1, numTimePoints );
+		imp = makeComposite( imp, CompositeImage.COMPOSITE );
+
+		return imp;
 	}
 
 	protected DescriptorParameters getParameters( final int dapichannel )
@@ -234,7 +260,7 @@ public class CorrectDrift
 		//String dir = "/media/preibisch/data/Microscopy/confocal/TestAcquisitions";
 		String  dir = "/Volumes/My Passport/confocal";
 
-		for ( int i = 1; i <= 4; ++i )
+		for ( int i = 3; i <= 3; ++i )
 			new CorrectDrift( dir, "worm" + i + ".zip", numChannels );
 	}
 }
