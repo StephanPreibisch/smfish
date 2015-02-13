@@ -39,14 +39,16 @@ public class TestJNAMemoryLeak
 		final Img< FloatType > input = OpenImg.open( f.getAbsolutePath(), new ArrayImgFactory<FloatType>() );
 
 		final Img< FloatType > imgCPU = input.copy();
+		final Img< FloatType > imgGPU = imgCPU.copy();
 
 		final int w = (int)imgCPU.dimension( 0 );
 		final int h = (int)imgCPU.dimension( 1 );
 		final int d = (int)imgCPU.dimension( 2 );
 		
-		final double sigma = 0.51;
+		final double sigma = 2;
 		
 		final float[] imgFCPU = ((FloatArray)((ArrayImg< FloatType, ? > )imgCPU).update( null ) ).getCurrentStorageArray();
+		final float[] imgFGPU = ((FloatArray)((ArrayImg< FloatType, ? > )imgGPU).update( null ) ).getCurrentStorageArray();
 
 		new ImageJ();
 		
@@ -65,8 +67,9 @@ public class TestJNAMemoryLeak
 			long time = System.currentTimeMillis();
 			
 			
-			
-			cuda.convolutionCPU( imgFCPU.clone(), kernelCPU.clone(), kernelCPU.clone(), kernelCPU.clone(), kernelCPU.length, kernelCPU.length, kernelCPU.length, w, h, d, 2, 0 );
+			cudaFunctions.gauss( imgFGPU.clone(), new int[]{ w, h, d }, sigma );
+
+			//cuda.convolutionCPU( imgFCPU.clone(), kernelCPU.clone(), kernelCPU.clone(), kernelCPU.clone(), kernelCPU.length, kernelCPU.length, kernelCPU.length, w, h, d, 2, 0 );
 			System.out.println( "CPU: " + (System.currentTimeMillis() - time) + " ms." );
 			System.out.println( "Free: " + Runtime.getRuntime().freeMemory()/(1024*1024) + " TotaL: " + Runtime.getRuntime().totalMemory()/(1024*1024) + " Max: " + Runtime.getRuntime().maxMemory()/(1024*1024) );
 		}
