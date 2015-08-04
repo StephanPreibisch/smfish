@@ -160,7 +160,7 @@ public class MeasureSplicing
 	
 	public static void main( String[] args )
 	{
-		final String dir = "/Users/preibischs/Documents/Transcription Meeting 2014/";
+		final String dir = "/Users/spreibi/Documents/Transcription Meeting 2014/";
 
 		final InterestPointList guideList = new InterestPointList( new File( dir ), new File( "interestpoints/tpId_0_viewSetupId_0.mRNA" ) );
 		guideList.loadInterestPoints();
@@ -170,7 +170,7 @@ public class MeasureSplicing
 
 		final Img< FloatType > guide = null;//OpenImg.open( new File( dir, "41_guide.tif" ).getAbsolutePath(), new ArrayImgFactory<FloatType>() );
 		final Img< FloatType > alt = null;//OpenImg.open( new File( dir, "41_alt_norm_div.tif" ).getAbsolutePath(), new ArrayImgFactory<FloatType>() );
-		
+
 		System.out.println( guideList.getInterestPoints().size() );
 		System.out.println( altList.getInterestPoints().size() );
 		
