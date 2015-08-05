@@ -27,7 +27,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import mpicbg.imglib.multithreading.SimpleMultiThreading;
 import mpicbg.imglib.util.Util;
 import mpicbg.spim.vis3d.VisualizeBeads;
+import net.imglib2.RealPoint;
 import net.imglib2.analyzesegmentation.wormfit.InlierCells;
+import net.imglib2.util.Pair;
+import net.imglib2.util.ValuePair;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -63,7 +66,7 @@ public class VisualizeSegmentation
 			drawInvisibleBoundingBox( univ, cells.getCells() );
 			drawCells( univ, cells, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
 
-			normalizeDetections( univ, null );
+			//normalizeDetections( univ, null );
 
 			final RecolorCell rcc = new RecolorCell( univ, new Color3f( 1, 0, 0 ) );
 			univ.getCanvas().addMouseMotionListener( rcc );
@@ -85,7 +88,7 @@ public class VisualizeSegmentation
 
 			System.out.println( "done" );
 
-			normalizeDetections( univ, fwo );
+			//normalizeDetections( univ, fwo );
 
 			//System.exit( 0 );
 			//VisualizationFunctions.drawArrow( univ, new Vector3f( new float[]{ 100, 100, 100 } ), 45, 10 );
@@ -115,16 +118,74 @@ public class VisualizeSegmentation
 		}
 		else
 		{
-			final List< InterestPoint > straightGuide = stretchWorm( fwo, guideList.getInterestPoints() );
-			drawInterestPoints( univ, straightGuide, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
+			//final List< InterestPoint > straightGuide = stretchWorm( fwo, guideList.getInterestPoints() );
+			//drawInterestPoints( univ, straightGuide, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
+			
+			final Cells cellsNew = stretchWormCells( fwo, cells );
+			drawCells( univ, cellsNew, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
+			
+			/*
+			System.out.println( "guide" );
+			for ( final InterestPoint p : stretchWorm( fwo, guideList.getInterestPoints() ) )
+				System.out.println( p.getId() + "\t" + p.getL()[ 0 ] + "\t" + p.getL()[ 1 ] + "\t" + p.getL()[ 2 ] );
+
+			System.out.println( "\nalt" );
+			for ( final InterestPoint p : stretchWorm( fwo, altList.getInterestPoints() ) )
+				System.out.println( p.getId() + "\t" + p.getL()[ 0 ] + "\t" + p.getL()[ 1 ] + "\t" + p.getL()[ 2 ] );
+			*/
 		}
 	}
 
-	public List< InterestPoint > stretchWorm( final FindWormOutline fwo, final List< InterestPoint > list )
+	public Cells stretchWormCells( final FindWormOutline fwo, final Cells cells )
 	{
-		final List< InterestPoint > straight = new ArrayList< InterestPoint >();
+		final List< Pair< Integer, float[] > > curved = new ArrayList< Pair<Integer,float[]> >();
+		final float[] loc = new float[ 3 ];
+
+		for ( final int id : cells.getCells().keySet() )
+		{
+			final Cell cell = cells.getCells().get( id );
+			cell.getPosition().localize( loc );
+			curved.add( new ValuePair< Integer, float[] >( cell.getId(), loc.clone() ) );
+		}
+
+		final List< Pair< Integer, float[] > > straight = stretchWorm( fwo, curved );
+
+		final Cells cellsNew = new Cells();
+
+		for ( final Pair< Integer, float[] > p : straight )
+		{
+			final Cell c = cells.getCells().get( p.getA() );
+			final RealPoint position = new RealPoint( 3 );
+			for ( int d = 0; d < 3; ++d )
+				position.setPosition( p.getB()[ d ], d );
+			cellsNew.getCells().put( p.getA(), new Cell( p.getA(), position, c.getRadius() ) );
+		}
+
+		return cellsNew;
+	}
+
+	public List< InterestPoint > stretchWormInterestPoints( final FindWormOutline fwo, final List< InterestPoint > list )
+	{
+		final List< Pair< Integer, float[] > > curved = new ArrayList< Pair<Integer,float[]> >();
 
 		for ( final InterestPoint p : list )
+			curved.add( new ValuePair< Integer, float[] >( p.getId(), p.getL() ) );
+
+		final List< Pair< Integer, float[] > > straight = stretchWorm( fwo, curved );
+
+		final ArrayList< InterestPoint > straightInterestPoints = new ArrayList< InterestPoint >();
+
+		for ( final Pair< Integer, float[] > p : straight )
+			straightInterestPoints.add(  new InterestPoint( p.getA(), p.getB() ) );
+
+		return straightInterestPoints;
+	}
+
+	public List< Pair< Integer, float[] > > stretchWorm( final FindWormOutline fwo, final List< Pair< Integer, float[] > > list )
+	{
+		final List< Pair< Integer, float[] > > straight = new ArrayList< Pair< Integer, float[] > >();
+
+		for ( final Pair< Integer, float[] > p : list )
 		{
 			//System.out.println( Util.printCoordinates( p.getL() ) );
 
@@ -136,7 +197,7 @@ public class VisualizeSegmentation
 	
 			double sumDtmp = 0;
 
-			final Point3f q = new Point3f( p.getL() );
+			final Point3f q = new Point3f( p.getB() );
 
 			for ( final InlierCells i : fwo.getSegments() )
 			{
@@ -148,7 +209,7 @@ public class VisualizeSegmentation
 						i.getP1().y - i.getP0().y,
 						i.getP1().z - i.getP0().z );
 
-				if ( point >= 0 && point <= 1.1 && ( closest == null || d < dist ) )
+				if ( point >= 0 && point <= 1.2 && ( closest == null || d < dist ) )
 				{
 					closest = i;
 					dist = d;
@@ -166,7 +227,7 @@ public class VisualizeSegmentation
 
 			if ( closest == null )
 			{
-				System.out.println( "Could not assign: " + Util.printCoordinates( p.getL() ) );
+				System.out.println( "Could not assign: " + Util.printCoordinates( p.getB() ) );
 				continue;
 			}
 			//System.exit( 0 );
@@ -181,14 +242,14 @@ public class VisualizeSegmentation
 					closest.getP0().z );
 
 			Transform3D t = Algebra.getTransformation( closest.getP0(), closest.getP1(), closest.getP0(), pX, false );
-			final Point3f qx = new Point3f( p.getL() );
+			final Point3f qx = new Point3f( p.getB() );
 			t.transform( qx );
 
 			// now we can simply measure the y
 			final double y = qx.y - closest.getP0().y;
 			final double z = qx.z - closest.getP0().z;
 
-			straight.add( new InterestPoint( p.getId(), new float[]{ (float)x, (float)y, (float)z } ) );
+			straight.add( new ValuePair< Integer, float[] >( p.getA(), new float[]{ (float)x, (float)y, (float)z } ) );
 		}
 
 		return straight;
