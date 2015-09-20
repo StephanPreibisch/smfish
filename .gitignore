@@ -6,3 +6,6 @@ img_*
 *.so
 *.dll
 .DS_STORE
+.Rproj.user
+src/main/R/data/
+src/main/R/R.Rproj
