@@ -124,7 +124,7 @@ public class StraightenWorm
 					closest.getP0().z );
 
 			Transform3D t = Algebra.getTransformation( closest.getP0(), closest.getP1(), closest.getP0(), pX, false );
-			final Point3f qx = new Point3f( p.getB() );
+			final Point3f qx = new Point3f( p.getB() );//TODO:here?
 			t.transform( qx );
 
 			// now we can simply measure the y

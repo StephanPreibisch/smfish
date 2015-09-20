@@ -4,6 +4,7 @@ import ij3d.Content;
 import ij3d.Image3DUniverse;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import mpicbg.imglib.multithreading.SimpleMultiThreading;
+import mpicbg.spim.io.TextFileAccess;
 import mpicbg.spim.vis3d.VisualizeBeads;
 
 import org.w3c.dom.Document;
@@ -59,12 +61,13 @@ public class VisualizeSegmentation
 		{
 			final Image3DUniverse univ = VisualizeBeads.initUniverse();
 			final List< InterestPoint > guide = loadInterestPoints( dir, "interestpoints/tpId_0_viewSetupId_1.mRNA", scaleZ );
-			final List< InterestPoint > alt = loadInterestPoints( dir, "interestpoints/tpId_0_viewSetupId_3.altExon", scaleZ );
+			final List< InterestPoint > alt = loadInterestPoints( dir, "interestpoints/tpId_0_viewSetupId_3.altExon.fused", scaleZ );
 
 			drawInvisibleBoundingBox( univ, cells.getCells() );
 			drawCells( univ, cells, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
-			drawInterestPoints( univ, guide, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
-
+			drawInterestPoints( univ, alt, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, true );
+			drawInterestPoints( univ, guide, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, false );
+			
 			final RecolorCell rcc = new RecolorCell( univ, new Color3f( 1, 0, 0 ) );
 			univ.getCanvas().addMouseMotionListener( rcc );
 
@@ -85,9 +88,27 @@ public class VisualizeSegmentation
 
 			System.out.println( "done" );
 
+			PrintWriter out = TextFileAccess.openFileWrite( new File( dir, "guideRNA.straight.txt" ) );
 			final List< InterestPoint > guideStretch = StraightenWorm.stretchWormInterestPoints( fwo, guide );
-			drawInterestPoints( univ, guideStretch, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
-			//normalizeDetections( univ, fwo );
+			for ( final InterestPoint ip : guideStretch )
+				out.println( ip.getId() + "\t" + ip.getL()[ 0 ] + "\t" + ip.getL()[ 1 ]  + "\t" + ip.getL()[ 2 ] );
+			out.close();
+
+			out = TextFileAccess.openFileWrite( new File( dir, "altexonRNA.straight.txt" ) );
+			final List< InterestPoint > altStretch = StraightenWorm.stretchWormInterestPoints( fwo, alt );
+			for ( final InterestPoint ip : altStretch )
+				out.println( ip.getId() + "\t" + ip.getL()[ 0 ] + "\t" + ip.getL()[ 1 ]  + "\t" + ip.getL()[ 2 ] );
+			out.close();
+
+			out = TextFileAccess.openFileWrite( new File( dir, "cells.straight.txt" ) );
+			final Cells cellsNew = StraightenWorm.stretchWormCells( fwo, cells );
+			for ( final Cell cell : cellsNew.getCells().values() )
+				out.println( cell.getId() + "\t" + cell.getFloatPosition( 0 ) + "\t" + cell.getFloatPosition( 1 )  + "\t" + cell.getFloatPosition( 2 ) );
+			out.close();
+
+			drawInterestPoints( univ, altStretch, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, true );
+			drawInterestPoints( univ, guideStretch, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, false );
+			drawCells( univ, cellsNew, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
 
 			//System.exit( 0 );
 			//VisualizationFunctions.drawArrow( univ, new Vector3f( new float[]{ 100, 100, 100 } ), 45, 10 );
@@ -202,7 +223,8 @@ public class VisualizeSegmentation
 			final List< InterestPoint > points,
 			final Transform3D globalTransform,
 			final Color3f color,
-			final float transparency )
+			final float transparency,
+			final boolean red )
 	{		
 		// get the scene
 		final BranchGroup parent = univ.getScene();
@@ -234,9 +256,12 @@ public class VisualizeSegmentation
 			transformGroup.setCapability( TransformGroup.ALLOW_CHILDREN_WRITE );
 
 			// add the sphere
-			final int r = random.nextInt( 192 );
+			final int r = 255;//random.nextInt( 192 );
 			final Appearance appearance = new Appearance();
-			appearance.setColoringAttributes( new ColoringAttributes( new Color3f( r/255f, 0, r/255f ), ColoringAttributes.SHADE_GOURAUD ) );
+			if ( red )
+				appearance.setColoringAttributes( new ColoringAttributes( new Color3f( r/255f, 0, 0 ), ColoringAttributes.SHADE_GOURAUD ) );
+			else
+				appearance.setColoringAttributes( new ColoringAttributes( new Color3f( 0, r/255f, 0 ), ColoringAttributes.SHADE_GOURAUD ) );
 			appearance.setTransparencyAttributes( new TransparencyAttributes( TransparencyAttributes.NICEST, transparency ) );
 
 			appearance.getColoringAttributes().setCapability( ColoringAttributes.ALLOW_COLOR_READ );
