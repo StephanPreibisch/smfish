@@ -9,3 +9,5 @@ img_*
 .Rproj.user
 src/main/R/data/
 src/main/R/R.Rproj
+.RData
+.Rhistory
