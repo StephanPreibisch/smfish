@@ -11,7 +11,6 @@
 #' @return A numerical vector of length 2 theta and r values. 
 #' 
 #' @family transformation functions
-#' @seealso \code{\link{km2gps}} for km to gps transformation
 polar_transform <- function(x,y) {
   x = as.numeric(x)
   y = as.numeric(y)
