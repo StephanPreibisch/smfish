@@ -154,7 +154,8 @@ public class Algebra
 			return new Transform3D();
 
 		// the rotation angle is defined by the dot product (if normalized)
-		final float angle = v0.dot( v1 );
+		// make sure it is really between [-1,1], numerical instabilities can lead to e.g. 1.0000001
+		final float angle = Math.min( 1.0f, Math.max( -1.0f, v0.dot( v1 ) ) );
 
 		// Do an axis/angle 3d transformation
 		final Transform3D t = new Transform3D();
