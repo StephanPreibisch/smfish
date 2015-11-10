@@ -48,7 +48,8 @@ public class FindWormOutline
 		final Score score = new ScoreVolume();
 
 		InlierCells i1 = defineFirstCells( initialRadius );
-		i1.visualizeInliers( univ, cells, false, true, false );
+		if ( univ != null )
+			i1.visualizeInliers( univ, cells, false, true, false );
 
 		segments.add( i1 );
 
@@ -190,7 +191,8 @@ public class FindWormOutline
 
 		//best.unvisualizeInliers( univ, cells );
 		best = testGuess( best.getP0(), p1, best.getR0(), best.getR0() * (1.0f - 1.0f/cutLength) + best.getR1() * (1.0f/cutLength), cells );
-		best.visualizeInliers( univ, cells, true, true, true );
+		if ( univ != null )
+			best.visualizeInliers( univ, cells, true, true, true );
 
 		SimpleMultiThreading.threadWait( 250 );
 		//makeScreenshot( sementCount );
