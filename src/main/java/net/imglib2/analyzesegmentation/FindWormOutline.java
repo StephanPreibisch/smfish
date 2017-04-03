@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Point3f;
 import org.scijava.vecmath.Vector3f;
 
@@ -78,6 +79,8 @@ public class FindWormOutline
 
 	protected InlierCells fitNextSegment( final InlierCells previousInliers, final Score score, final float cutLength, final int sementCount )
 	{
+		final Color3f c = new Color3f( 1, 0, 0 );
+
 		// the initial radius and point are the last radius and point of the previous segment
 		final float sr = previousInliers.getR1();
 
@@ -146,22 +149,22 @@ public class FindWormOutline
 			
 									if ( best == null || score.score( previousInliers, best ) < score.score( previousInliers, inliers ) )
 									{
-										//if ( best != null )
-										//	best.unvisualizeInliers( univ, cells );
+										if ( best != null )
+											best.unvisualizeInliers( univ, cells );
 	
 										if ( r0 != previousInliers.getR1() )
 										{
-											//previousInliers.unvisualizeInliers( univ, cells );
+											previousInliers.unvisualizeInliers( univ, cells );
 											previousInliers.setR1( r0 );
-											//previousInliers.visualizeInliers( univ, cells, c );
+											previousInliers.visualizeInliers( univ, cells, true, true, true );
 										}
 	
 										bestSV.set( v );
 										best = inliers;
-										//best.visualizeInliers( univ, cells, c );
+										best.visualizeInliers( univ, cells, true, true, true );
 		
 										//System.out.println( step + ": l=" + l + " r0=" + r0 + " r1=" + r1 + " score=" + score.score( previousInliers, best ) + " |cells|=" + best.getInlierCells().size() );
-										//SimpleMultiThreading.threadWait( 25 );
+										SimpleMultiThreading.threadWait( 25 );
 									}
 								}
 						}
@@ -171,8 +174,8 @@ public class FindWormOutline
 			sv.set( bestSV );
 		}
 
-		//InlierCells preCut = best;
-		//preCut.visualizeInliers( univ, cells, true, false, false );
+		InlierCells preCut = best;
+		preCut.visualizeInliers( univ, cells, true, false, false );
 
 		//
 		// only take 1/3 of the vector
