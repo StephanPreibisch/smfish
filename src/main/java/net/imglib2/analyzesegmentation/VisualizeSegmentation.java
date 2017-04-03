@@ -52,6 +52,8 @@ public class VisualizeSegmentation
 
 	public VisualizeSegmentation()
 	{
+		final boolean visualizeStretching = false;
+
 		this.fileChooser = createFileChooser();
 
 		// TODO: remove correction for wrong calibration
@@ -80,17 +82,22 @@ public class VisualizeSegmentation
 
 			rcc.setActive( false );
 			FindWormOutline.makeScreenshot( 0 );
-			
-			//c.detach();
-			//i1.detach();
-			//i2.detach();
 
-			final FindWormOutline fwo = new FindWormOutline( univ, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()), 25 );
+			if ( visualizeStretching )
+			{
+				c.detach();
+				i1.detach();
+				i2.detach();
+			}
+
+			final FindWormOutline fwo = new FindWormOutline( visualizeStretching? null : univ, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()), 25 );
 			fwo.findOutline();
 
 			System.out.println( "done" );
 
-			SimpleMultiThreading.threadHaltUnClean();
+			if ( !visualizeStretching )
+				SimpleMultiThreading.threadHaltUnClean();
+
 			int i = 0;
 
 			for ( float amount = 1f; amount >= 0; amount -= 0.01f )
