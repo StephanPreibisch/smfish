@@ -1,22 +1,11 @@
 package net.imglib2.analyzesegmentation;
 
-import ij3d.Content;
-import ij3d.Image3DUniverse;
-
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import mpicbg.imglib.multithreading.SimpleMultiThreading;
-import mpicbg.spim.io.TextFileAccess;
 
 import org.scijava.java3d.Appearance;
 import org.scijava.java3d.BranchGroup;
@@ -29,35 +18,36 @@ import org.scijava.java3d.utils.geometry.Sphere;
 import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Point3f;
 import org.scijava.vecmath.Vector3f;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import spim.fiji.spimdata.interestpoints.InterestPoint;
-import spim.fiji.spimdata.interestpoints.InterestPointList;
 
 import customnode.CustomPointMesh;
 import customnode.Mesh_Maker;
+import ij3d.Content;
+import ij3d.Image3DUniverse;
+import mpicbg.imglib.multithreading.SimpleMultiThreading;
+import mpicbg.spim.io.TextFileAccess;
+import net.imglib2.analyzesegmentation.load.Load;
+import net.imglib2.analyzesegmentation.load.LoadBDV;
+import spim.fiji.spimdata.interestpoints.InterestPoint;
+import spim.fiji.spimdata.interestpoints.InterestPointList;
 
 public class VisualizeSegmentation
 {
-	public static String defaultXML = "/Users/spreibi/Documents/Microscopy/smFISH/samidouble_43_reconstructed.cells.xml";
-
 	final String dir = "/Users/spreibi/Documents/Transcription Meeting 2014/";
 	final double scaleZ = 1.6;
 
-	final JFileChooser fileChooser;
-	final Cells cells = new Cells();
+	final Cells cells;
 	int nextCellId = 0;
 
 	public VisualizeSegmentation()
 	{
 		final boolean visualizeStretching = false;
 
-		this.fileChooser = createFileChooser();
-
 		// TODO: remove correction for wrong calibration
-		if ( this.loadAnnotations( scaleZ ) )
+		final Load loader = new LoadBDV( scaleZ );
+
+		this.cells = loader.load();
+
+		if ( this.cells != null )
 		{
 			final Image3DUniverse univ = Java3DHelpers.initUniverse();
 			final List< InterestPoint > guide = loadInterestPoints( dir, "interestpoints/tpId_0_viewSetupId_1.mRNA", scaleZ );
@@ -472,90 +462,6 @@ public class VisualizeSegmentation
 		univ.addTriangleMesh( meshes, new Color3f( 1, 1, 1 ), "nuclei" );
 
 		return null;
-	}
-
-	protected synchronized boolean loadAnnotations( final double scaleZ )
-	{
-		if ( defaultXML != null )
-		{
-			fileChooser.setSelectedFile( new File( defaultXML ) );
-		}
-
-		final int returnVal = fileChooser.showDialog( null, "Open" );
-
-		if ( returnVal == JFileChooser.APPROVE_OPTION )
-		{
-			final File file = fileChooser.getSelectedFile();
-			defaultXML = file.getAbsolutePath();
-
-			System.out.println( "loading annotions from " + file );
-
-			cells.getCells().clear();
-			cells.getSpheres().clear();
-
-			nextCellId = 0;
-
-			try
-			{
-				final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-				final DocumentBuilder db = dbf.newDocumentBuilder();
-				final Document dom = db.parse( file );
-				final Element root = dom.getDocumentElement();
-				final NodeList nodes = root.getElementsByTagName( "sphere" );
-				for ( int i = 0; i < nodes.getLength(); ++i )
-				{
-					final Cell cell = Cell.fromXml( ( Element ) nodes.item( i ) );
-					
-					cell.getPosition().setPosition( cell.getDoublePosition( 2 ) * scaleZ, 2 );
-					
-					cells.getCells().put( cell.getId(), cell );
-					if ( cell.getId() >= nextCellId )
-						nextCellId = cell.getId() + 1;
-				}
-
-				System.out.println( "Loaded " + cells.getCells().keySet().size() + " cells." );
-			}
-			catch ( final Exception e )
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	protected JFileChooser createFileChooser()
-	{
-		final JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setFileFilter( new FileFilter()
-		{
-			@Override
-			public String getDescription() { return "xml files"; }
-
-			@Override
-			public boolean accept( final File f )
-			{
-				if ( f.isDirectory() )
-					return true;
-				if ( f.isFile() )
-				{
-					final String s = f.getName();
-					final int i = s.lastIndexOf('.');
-					if (i > 0 &&  i < s.length() - 1) {
-						final String ext = s.substring(i+1).toLowerCase();
-						return ext.equals( "xml" );
-					}
-				}
-				return false;
-			}
-		} );
-
-		return fileChooser;
 	}
 
 	public static void main( String[] args )
