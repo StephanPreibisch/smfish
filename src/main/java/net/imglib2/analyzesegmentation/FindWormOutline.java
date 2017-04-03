@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Point3f;
 import org.scijava.vecmath.Vector3f;
 
@@ -79,8 +78,6 @@ public class FindWormOutline
 
 	protected InlierCells fitNextSegment( final InlierCells previousInliers, final Score score, final float cutLength, final int sementCount )
 	{
-		final Color3f c = new Color3f( 1, 0, 0 );
-
 		// the initial radius and point are the last radius and point of the previous segment
 		final float sr = previousInliers.getR1();
 
@@ -149,22 +146,26 @@ public class FindWormOutline
 			
 									if ( best == null || score.score( previousInliers, best ) < score.score( previousInliers, inliers ) )
 									{
-										if ( best != null )
-											best.unvisualizeInliers( univ, cells );
+										//if ( best != null &&  univ != null )
+										//	best.unvisualizeInliers( univ, cells );
 	
 										if ( r0 != previousInliers.getR1() )
 										{
-											previousInliers.unvisualizeInliers( univ, cells );
+											// if ( univ != null )
+											//	previousInliers.unvisualizeInliers( univ, cells );
 											previousInliers.setR1( r0 );
-											previousInliers.visualizeInliers( univ, cells, true, true, true );
+											// if ( univ != null )
+											//	previousInliers.visualizeInliers( univ, cells, true, true, true );
 										}
 	
 										bestSV.set( v );
 										best = inliers;
-										best.visualizeInliers( univ, cells, true, true, true );
+										// if ( univ != null )
+										//	best.visualizeInliers( univ, cells, true, true, true );
 		
 										//System.out.println( step + ": l=" + l + " r0=" + r0 + " r1=" + r1 + " score=" + score.score( previousInliers, best ) + " |cells|=" + best.getInlierCells().size() );
-										SimpleMultiThreading.threadWait( 25 );
+										// if ( univ != null )
+										//	SimpleMultiThreading.threadWait( 25 );
 									}
 								}
 						}
@@ -174,8 +175,8 @@ public class FindWormOutline
 			sv.set( bestSV );
 		}
 
-		InlierCells preCut = best;
-		preCut.visualizeInliers( univ, cells, true, false, false );
+		// if ( univ != null )
+		//	preCut.visualizeInliers( univ, cells, true, false, false );
 
 		//
 		// only take 1/3 of the vector
@@ -192,7 +193,8 @@ public class FindWormOutline
 				best.getP0().y + v.y,
 				best.getP0().z + v.z );
 
-		//best.unvisualizeInliers( univ, cells );
+		// if ( univ != null )
+		//	best.unvisualizeInliers( univ, cells );
 		best = testGuess( best.getP0(), p1, best.getR0(), best.getR0() * (1.0f - 1.0f/cutLength) + best.getR1() * (1.0f/cutLength), cells );
 		if ( univ != null )
 			best.visualizeInliers( univ, cells, true, true, true );
