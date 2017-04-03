@@ -20,6 +20,11 @@
   		<artifactId>Descriptor_based_registration</artifactId>
   		<version>2.0.8-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+  		<groupId>sc.fiji</groupId>
+  		<artifactId>3D_Viewer</artifactId>
+  		<version>4.0.1-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
 
 	<repositories>
