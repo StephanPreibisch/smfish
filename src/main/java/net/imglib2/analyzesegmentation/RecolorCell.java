@@ -3,20 +3,28 @@ package net.imglib2.analyzesegmentation;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
+import org.scijava.java3d.Node;
+import org.scijava.java3d.SceneGraphPath;
+import org.scijava.java3d.utils.geometry.Sphere;
+import org.scijava.java3d.utils.picking.PickCanvas;
+import org.scijava.java3d.utils.picking.PickResult;
+import org.scijava.java3d.utils.picking.PickTool;
+import org.scijava.vecmath.Color3f;
+
 import ij3d.Image3DUniverse;
 import ij3d.ImageCanvas3D;
 
-import javax.media.j3d.Node;
+//import javax.media.j3d.Node;
 
-import com.sun.j3d.utils.picking.PickCanvas;
-import com.sun.j3d.utils.picking.PickResult;
-import com.sun.j3d.utils.picking.PickTool;
+//import com.sun.j3d.utils.picking.PickCanvas;
+//import com.sun.j3d.utils.picking.PickResult;
+//import com.sun.j3d.utils.picking.PickTool;
 
 //import javax.media.j3d.PickInfo;
-import javax.media.j3d.SceneGraphPath;
-import javax.vecmath.Color3f;
+//import javax.media.j3d.SceneGraphPath;
+//import javax.vecmath.Color3f;
 
-import com.sun.j3d.utils.geometry.Sphere;
+//import com.sun.j3d.utils.geometry.Sphere;
 //import com.sun.j3d.utils.pickfast.PickCanvas;
 
 public class RecolorCell implements MouseMotionListener
@@ -98,7 +106,8 @@ public class RecolorCell implements MouseMotionListener
 				newSphere.getAppearance().getColoringAttributes().setColor( colorActive );
 				currentSphere = newSphere;
 
-				System.out.println( "Cell id: "  + ((Cell)currentSphere.getUserData()).getId() );
+				if ( currentSphere.getUserData() != null )
+					System.out.println( "Cell id: "  + ((Cell)currentSphere.getUserData()).getId() );
 			}
 		}
 	}

@@ -3,9 +3,9 @@ package net.imglib2.analyzesegmentation;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.j3d.Transform3D;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
+import org.scijava.java3d.Transform3D;
+import org.scijava.vecmath.Point3f;
+import org.scijava.vecmath.Vector3f;
 
 import mpicbg.imglib.util.Util;
 import net.imglib2.RealPoint;

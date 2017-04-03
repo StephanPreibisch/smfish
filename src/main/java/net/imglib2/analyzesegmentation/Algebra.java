@@ -1,9 +1,9 @@
 package net.imglib2.analyzesegmentation;
 
-import javax.media.j3d.Transform3D;
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
+import org.scijava.java3d.Transform3D;
+import org.scijava.vecmath.AxisAngle4f;
+import org.scijava.vecmath.Point3f;
+import org.scijava.vecmath.Vector3f;
 
 /**
  *  Copyright (c) 2014 Stephan Preibisch

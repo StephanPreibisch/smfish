@@ -7,16 +7,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.media.j3d.BranchGroup;
-import javax.vecmath.Color3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
+import org.scijava.java3d.BranchGroup;
+import org.scijava.java3d.utils.geometry.Sphere;
+import org.scijava.vecmath.Color3f;
+import org.scijava.vecmath.Point3f;
+import org.scijava.vecmath.Vector3f;
 
 import net.imglib2.analyzesegmentation.Algebra;
 import net.imglib2.analyzesegmentation.Cells;
 import net.imglib2.analyzesegmentation.VisualizeSegmentation;
-
-import com.sun.j3d.utils.geometry.Sphere;
 
 import customnode.CustomLineMesh;
 

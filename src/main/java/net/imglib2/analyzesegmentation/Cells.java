@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.scijava.java3d.utils.geometry.Sphere;
+
 import net.imglib2.KDTree;
 import net.imglib2.neighborsearch.RadiusNeighborSearchOnKDTree;
-
-import com.sun.j3d.utils.geometry.Sphere;
 
 public class Cells
 {

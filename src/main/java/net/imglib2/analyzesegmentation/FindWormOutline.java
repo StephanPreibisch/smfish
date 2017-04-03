@@ -10,9 +10,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-import javax.vecmath.Color3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
+
+import org.scijava.vecmath.Point3f;
+import org.scijava.vecmath.Vector3f;
 
 import net.imglib2.RealPoint;
 import net.imglib2.analyzesegmentation.wormfit.FirstInlierCells;

@@ -4,8 +4,8 @@ import ij3d.Image3DUniverse;
 
 import java.util.List;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
+import org.scijava.vecmath.Point3f;
+import org.scijava.vecmath.Vector3f;
 
 import net.imglib2.analyzesegmentation.Cells;
 

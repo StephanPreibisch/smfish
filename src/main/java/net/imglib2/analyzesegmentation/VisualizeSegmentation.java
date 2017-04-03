@@ -10,34 +10,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import javax.media.j3d.Appearance;
-import javax.media.j3d.BadTransformException;
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.ColoringAttributes;
-import javax.media.j3d.Shape3D;
-import javax.media.j3d.Transform3D;
-import javax.media.j3d.TransformGroup;
-import javax.media.j3d.TransparencyAttributes;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
-import javax.vecmath.Color3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import mpicbg.imglib.multithreading.SimpleMultiThreading;
 import mpicbg.spim.io.TextFileAccess;
-import mpicbg.spim.vis3d.VisualizeBeads;
 
+import org.scijava.java3d.Appearance;
+import org.scijava.java3d.BranchGroup;
+import org.scijava.java3d.ColoringAttributes;
+import org.scijava.java3d.Shape3D;
+import org.scijava.java3d.Transform3D;
+import org.scijava.java3d.TransformGroup;
+import org.scijava.java3d.TransparencyAttributes;
+import org.scijava.java3d.utils.geometry.Sphere;
+import org.scijava.vecmath.Color3f;
+import org.scijava.vecmath.Point3f;
+import org.scijava.vecmath.Vector3f;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import spim.fiji.spimdata.interestpoints.InterestPoint;
 import spim.fiji.spimdata.interestpoints.InterestPointList;
-
-import com.sun.j3d.utils.geometry.Sphere;
 
 import customnode.CustomPointMesh;
 import customnode.Mesh_Maker;
@@ -60,7 +57,7 @@ public class VisualizeSegmentation
 		// TODO: remove correction for wrong calibration
 		if ( this.loadAnnotations( scaleZ ) )
 		{
-			final Image3DUniverse univ = VisualizeBeads.initUniverse();
+			final Image3DUniverse univ = Java3DHelpers.initUniverse();
 			final List< InterestPoint > guide = loadInterestPoints( dir, "interestpoints/tpId_0_viewSetupId_1.mRNA", scaleZ );
 			final List< InterestPoint > alt = loadInterestPoints( dir, "interestpoints/tpId_0_viewSetupId_3.altExon.fused", scaleZ );
 
@@ -84,15 +81,16 @@ public class VisualizeSegmentation
 			rcc.setActive( false );
 			FindWormOutline.makeScreenshot( 0 );
 			
-			c.detach();
-			i1.detach();
-			i2.detach();
+			//c.detach();
+			//i1.detach();
+			//i2.detach();
 
-			final FindWormOutline fwo = new FindWormOutline( null, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()), 25 );
+			final FindWormOutline fwo = new FindWormOutline( univ, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()), 25 );
 			fwo.findOutline();
 
 			System.out.println( "done" );
 
+			SimpleMultiThreading.threadHaltUnClean();
 			int i = 0;
 
 			for ( float amount = 1f; amount >= 0; amount -= 0.01f )
@@ -122,9 +120,11 @@ public class VisualizeSegmentation
 				i2 = drawCells( univ, cellsNew, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
 				
 				SimpleMultiThreading.threadWait( 250 );
-				FindWormOutline.makeScreenshot( i++ );
-				SimpleMultiThreading.threadWait( 100 );
+				//FindWormOutline.makeScreenshot( i++ );
+				//SimpleMultiThreading.threadWait( 100 );
 
+				if ( amount < 0.02 )
+					SimpleMultiThreading.threadHaltUnClean();
 				c.detach();
 				i1.detach();
 				i2.detach();

@@ -3,9 +3,9 @@ package net.imglib2.analyzesegmentation;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.vecmath.Color3f;
+import org.scijava.java3d.utils.geometry.Sphere;
+import org.scijava.vecmath.Color3f;
 
-import com.sun.j3d.utils.geometry.Sphere;
 
 public class DefineInitialCellVector implements MouseListener
 {

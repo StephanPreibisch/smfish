@@ -1,5 +1,14 @@
 package net.imglib2.analyzesegmentation;
 
+import org.scijava.java3d.Appearance;
+import org.scijava.java3d.Node;
+import org.scijava.java3d.Shape3D;
+import org.scijava.java3d.TriangleArray;
+import org.scijava.java3d.TriangleFanArray;
+import org.scijava.java3d.utils.geometry.Primitive;
+import org.scijava.vecmath.Point3f;
+import org.scijava.vecmath.Vector3f;
+
 /**
  *  neuroConstruct
  *  Software for developing large scale 3D networks of biologically realistic neurons
@@ -25,10 +34,6 @@ package net.imglib2.analyzesegmentation;
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-import com.sun.j3d.utils.geometry.*;
-import javax.vecmath.*;
-import javax.media.j3d.*;
 
 /**
  * For creating a Primitive shape in the form of a truncated cone
