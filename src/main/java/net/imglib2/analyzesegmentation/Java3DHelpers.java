@@ -27,7 +27,7 @@ public class Java3DHelpers
 
 	public static Image3DUniverse initUniverse()
 	{
-		final Image3DUniverse uni = new Image3DUniverse( 800, 600 );
+		final Image3DUniverse uni = new Image3DUniverse( 1200, 600 );
 		uni.show();
 
 		setBackgroundColor( uni, backgroundColor );
