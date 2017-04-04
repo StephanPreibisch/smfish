@@ -65,11 +65,12 @@ public class FindWormOutline
 
 			segments.add( i );
 		}
-		while ( c < 39 && i.getR1() > 0.1 );
+		while ( c < 48 && i.getR1() > 0.1 );
 
 		// worm43:c=39
 		// worm41:c=27
 		
+		// dauer:c=48
 		SimpleMultiThreading.threadWait( 250 );
 		makeScreenshot( c + 1 );
 	}
@@ -89,7 +90,7 @@ public class FindWormOutline
 		final float refL;
 
 		if ( FirstInlierCells.class.isInstance( previousInliers ) )
-			refL = sv.length() * 2f;
+			refL = sv.length() * 3f;
 		else
 			refL = sv.length() * cutLength;
 
@@ -108,7 +109,7 @@ public class FindWormOutline
 			// TODO: Remove manual stopping
 			int from, to;
 
-			if ( sementCount < 35 )
+			if ( sementCount < 48 )
 			{
 				from = -1;
 				to = 1;
