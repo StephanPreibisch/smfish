@@ -81,16 +81,17 @@ public class LoadDauer extends Load
 									scale * scaleZ * avg[ 2 ] ),
 									(float)( scale * radius ) );
 
-							if ( avg[ 1 ] < 6000 )
+							if ( cells.getCells().containsKey( cell.getId() ) )
+								System.out.println(  "collision " + cell.getId() );
+
+							cells.getCells().put( cell.getId(), cell );
+
+							for ( int d = 0; d < n; ++d )
 							{
-								cells.getCells().put( cell.getId(), cell );
-	
-								for ( int d = 0; d < n; ++d )
-								{
-									min[ d ] = Math.min( min[ d ], cell.getDoublePosition( d ) );
-									max[ d ] = Math.max( max[ d ], cell.getDoublePosition( d ) );
-								}
+								min[ d ] = Math.min( min[ d ], cell.getDoublePosition( d ) );
+								max[ d ] = Math.max( max[ d ], cell.getDoublePosition( d ) );
 							}
+
 						}
 
 						locations.clear();
@@ -110,7 +111,7 @@ public class LoadDauer extends Load
 				numCells = 0;
 				return null;
 			}
-
+	
 			return cells;
 		}
 		else
