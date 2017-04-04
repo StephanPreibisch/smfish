@@ -31,9 +31,7 @@ public class LoadBDV extends Load
 		if ( defaultXML != null )
 			fileChooser.setSelectedFile( new File( defaultXML ) );
 
-		final int returnVal = fileChooser.showDialog( null, "Open" );
-
-		if ( returnVal == JFileChooser.APPROVE_OPTION )
+		if ( fileChooser() == JFileChooser.APPROVE_OPTION )
 		{
 			final File file = fileChooser.getSelectedFile();
 			defaultXML = file.getAbsolutePath();

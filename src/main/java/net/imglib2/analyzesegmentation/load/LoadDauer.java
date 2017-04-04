@@ -30,9 +30,7 @@ public class LoadDauer extends Load
 		if ( defaultText != null )
 			fileChooser.setSelectedFile( new File( defaultText ) );
 
-		final int returnVal = fileChooser.showDialog( null, "Open" );
-
-		if ( returnVal == JFileChooser.APPROVE_OPTION )
+		if ( fileChooser() == JFileChooser.APPROVE_OPTION )
 		{
 			final File file = fileChooser.getSelectedFile();
 			defaultText = file.getAbsolutePath();
@@ -75,19 +73,23 @@ public class LoadDauer extends Load
 							// make a new cell from the old data if there is any
 							final double[] avg = avg( locations );
 							final double[] stdev = stdev( locations, avg );
-							final double radius = ( stdev[ 0 ] + stdev[ 1 ] + stdev[ 2 ] ) / 3.0;
+							final double radius = ( stdev[ 0 ] + stdev[ 1 ] + stdev[ 2 ] ) / 2.0;
 
 							final Cell cell = new Cell( nextCellId, new RealPoint(
+									scale * avg[ 1 ], // switch xy
 									scale * avg[ 0 ],
-									scale * avg[ 1 ],
 									scale * scaleZ * avg[ 2 ] ),
 									(float)( scale * radius ) );
-							cells.getCells().put( cell.getId(), cell );
 
-							for ( int d = 0; d < n; ++d )
+							if ( avg[ 1 ] < 6000 )
 							{
-								min[ d ] = Math.min( min[ d ], cell.getDoublePosition( d ) );
-								max[ d ] = Math.max( max[ d ], cell.getDoublePosition( d ) );
+								cells.getCells().put( cell.getId(), cell );
+	
+								for ( int d = 0; d < n; ++d )
+								{
+									min[ d ] = Math.min( min[ d ], cell.getDoublePosition( d ) );
+									max[ d ] = Math.max( max[ d ], cell.getDoublePosition( d ) );
+								}
 							}
 						}
 

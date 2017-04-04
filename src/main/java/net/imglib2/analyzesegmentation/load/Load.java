@@ -3,6 +3,7 @@ package net.imglib2.analyzesegmentation.load;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 import net.imglib2.RealInterval;
@@ -39,6 +40,31 @@ public abstract class Load implements RealInterval
 	 */
 	public abstract Cells load();
 	protected abstract String validExtension();
+
+	protected int fileChooser()
+	{
+		// otherwise doesnt pop up sometimes -- (horrible code)
+		final int[] returnVal = new int[]{ Integer.MIN_VALUE };
+		SwingUtilities.invokeLater(
+			new Runnable()
+			{
+				public void run()
+				{
+					returnVal[ 0 ] = fileChooser.showDialog( null, "Open" );
+				}
+			});
+
+		do
+		{
+			try
+			{
+				Thread.sleep( 100 );
+			} catch ( InterruptedException e ) {}
+		}
+		while ( returnVal[ 0 ] == Integer.MIN_VALUE );
+
+		return returnVal[ 0 ];
+	}
 
 	public int numCells() { return numCells; }
 
