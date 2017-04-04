@@ -32,7 +32,7 @@ public class FindWormOutline
 
 	final ArrayList< InlierCells > segments = new ArrayList< InlierCells >();
 
-	protected float[] vectorStep = new float[]{ /*20f, */ 20f, 10f, 5f, 2f, 1f };
+	protected float[] vectorStep = new float[]{ /*20f, */ 40f, 20f, 15f, 10f, 5f, 2f, 1f };
 
 	public FindWormOutline( final Image3DUniverse univ, final Cells cells, final Cell cell0, final Cell cell1, final float initialRadius )
 	{
@@ -65,12 +65,12 @@ public class FindWormOutline
 
 			segments.add( i );
 		}
-		while ( c < 48 && i.getR1() > 0.1 );
+		while ( c < 36 && i.getR1() > 0.1 );
 
 		// worm43:c=39
 		// worm41:c=27
 		
-		// dauer:c=48
+		// dauer:c=47
 		SimpleMultiThreading.threadWait( 250 );
 		makeScreenshot( c + 1 );
 	}
@@ -90,7 +90,7 @@ public class FindWormOutline
 		final float refL;
 
 		if ( FirstInlierCells.class.isInstance( previousInliers ) )
-			refL = sv.length() * 3f;
+			refL = sv.length() * 4f;
 		else
 			refL = sv.length() * cutLength;
 
