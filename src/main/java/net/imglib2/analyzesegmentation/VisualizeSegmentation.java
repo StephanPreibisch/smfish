@@ -41,7 +41,7 @@ public class VisualizeSegmentation
 
 	public VisualizeSegmentation()
 	{
-		final boolean visualizeStretching = false;
+		final boolean visualizeStretching = true;
 
 		// Loaded 560 cells, distributed in space: [271.95, 23.16, 70.057] -> [1170.60, 962.07, 186.56], dimensions (898.65, 938.91, 116.50)
 		//final Load loader = new LoadBDV( scaleZ );
@@ -63,17 +63,16 @@ public class VisualizeSegmentation
 			BranchGroup c = drawCells( univ, cells, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
 			BranchGroup i1 = null;//drawInterestPoints( univ, alt, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, true );
 			BranchGroup i2 = null;//drawInterestPoints( univ, guide, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, false );
-			
+
+
 			final RecolorCell rcc = new RecolorCell( univ, new Color3f( 1, 0, 0 ) );
 			univ.getCanvas().addMouseMotionListener( rcc );
 
 			final DefineInitialCellVector dicv = new DefineInitialCellVector( rcc, cells );
 			univ.getCanvas().addMouseListener( dicv );
 
-			do
-			{
-				SimpleMultiThreading.threadWait( 100 );
-			}
+			// wait until two cells are selected
+			do { SimpleMultiThreading.threadWait( 100 ); }
 			while ( dicv.getSphere2() == null );
 
 			rcc.setActive( false );
@@ -82,8 +81,10 @@ public class VisualizeSegmentation
 			if ( visualizeStretching )
 			{
 				c.detach();
-				//i1.detach();
-				//i2.detach();
+				if ( i1 != null )
+					i1.detach();
+				if ( i2 != null )
+					i2.detach();
 			}
 
 			final FindWormOutline fwo = new FindWormOutline( visualizeStretching? null : univ, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()), 25 );
@@ -100,37 +101,49 @@ public class VisualizeSegmentation
 			{
 				System.out.println( amount );
 
-				PrintWriter out = TextFileAccess.openFileWrite( new File( dir, "guideRNA.straight.txt" ) );
-				final List< InterestPoint > guideStretch = StraightenWorm.stretchWormInterestPoints( fwo, guide, amount );
-				for ( final InterestPoint ip : guideStretch )
-					out.println( ip.getId() + "\t" + ip.getL()[ 0 ] + "\t" + ip.getL()[ 1 ]  + "\t" + ip.getL()[ 2 ] );
-				out.close();
+				PrintWriter out;
+
+				if ( guide != null )
+				{
+					out = TextFileAccess.openFileWrite( new File( dir, "guideRNA.straight.txt" ) );
+					final List< InterestPoint > guideStretch = StraightenWorm.stretchWormInterestPoints( fwo, guide, amount );
+					for ( final InterestPoint ip : guideStretch )
+						out.println( ip.getId() + "\t" + ip.getL()[ 0 ] + "\t" + ip.getL()[ 1 ]  + "\t" + ip.getL()[ 2 ] );
+					out.close();
+
+					i2 = drawInterestPoints( univ, guideStretch, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, false );
+				}
 	
-				out = TextFileAccess.openFileWrite( new File( dir, "altexonRNA.straight.txt" ) );
-				final List< InterestPoint > altStretch = StraightenWorm.stretchWormInterestPoints( fwo, alt, amount );
-				for ( final InterestPoint ip : altStretch )
-					out.println( ip.getId() + "\t" + ip.getL()[ 0 ] + "\t" + ip.getL()[ 1 ]  + "\t" + ip.getL()[ 2 ] );
-				out.close();
-	
+				if ( alt != null )
+				{
+					out = TextFileAccess.openFileWrite( new File( dir, "altexonRNA.straight.txt" ) );
+					final List< InterestPoint > altStretch = StraightenWorm.stretchWormInterestPoints( fwo, alt, amount );
+					for ( final InterestPoint ip : altStretch )
+						out.println( ip.getId() + "\t" + ip.getL()[ 0 ] + "\t" + ip.getL()[ 1 ]  + "\t" + ip.getL()[ 2 ] );
+					out.close();
+
+					i1 = drawInterestPoints( univ, altStretch, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, true );
+				}
+
 				out = TextFileAccess.openFileWrite( new File( dir, "cells.straight.txt" ) );
 				final Cells cellsNew = StraightenWorm.stretchWormCells( fwo, cells, amount );
 				for ( final Cell cell : cellsNew.getCells().values() )
 					out.println( cell.getId() + "\t" + cell.getFloatPosition( 0 ) + "\t" + cell.getFloatPosition( 1 )  + "\t" + cell.getFloatPosition( 2 ) );
 				out.close();
 	
-				c = drawInterestPoints( univ, altStretch, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, true );
-				i1 = drawInterestPoints( univ, guideStretch, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, false );
-				i2 = drawCells( univ, cellsNew, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
-				
+				c = drawCells( univ, cellsNew, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
+
 				SimpleMultiThreading.threadWait( 250 );
-				//FindWormOutline.makeScreenshot( i++ );
-				//SimpleMultiThreading.threadWait( 100 );
+				FindWormOutline.makeScreenshot( i++ );
+				SimpleMultiThreading.threadWait( 100 );
 
 				if ( amount < 0.02 )
 					SimpleMultiThreading.threadHaltUnClean();
 				c.detach();
-				i1.detach();
-				i2.detach();
+				if ( i1 != null )
+					i1.detach();
+				if ( i2 != null )
+					i2.detach();
 			}
 			//System.exit( 0 );
 			//VisualizationFunctions.drawArrow( univ, new Vector3f( new float[]{ 100, 100, 100 } ), 45, 10 );
