@@ -28,6 +28,7 @@ import mpicbg.spim.io.TextFileAccess;
 import net.imglib2.analyzesegmentation.load.Load;
 import net.imglib2.analyzesegmentation.load.LoadBDV;
 import net.imglib2.analyzesegmentation.load.LoadDauer;
+import net.imglib2.analyzesegmentation.load.LoadInterestPoints;
 import spim.fiji.spimdata.interestpoints.InterestPoint;
 import spim.fiji.spimdata.interestpoints.InterestPointList;
 
@@ -41,13 +42,15 @@ public class VisualizeSegmentation
 
 	public VisualizeSegmentation()
 	{
-		final boolean visualizeStretching = true;
+		final boolean visualizeStretching = false;
 
 		// Loaded 560 cells, distributed in space: [271.95, 23.16, 70.057] -> [1170.60, 962.07, 186.56], dimensions (898.65, 938.91, 116.50)
 		//final Load loader = new LoadBDV( scaleZ );
 
 		// Loaded 672 cells, distributed in space: [755.245, 1561.19, 103.15] -> [2500.66, 14025.16, 1242.0], dimensions (1745.41, 12463.98, 1138.85)
-		final Load loader = new LoadDauer( 1.0 / 3, 0.85 );
+		//final Load loader = new LoadDauer( 1.0 / 3, 0.85 );
+
+		final Load loader = new LoadInterestPoints( 1.0 );
 
 		this.cells = loader.load();
 
@@ -56,7 +59,7 @@ public class VisualizeSegmentation
 		if ( this.cells != null )
 		{
 			final Image3DUniverse univ = Java3DHelpers.initUniverse();
-			final List< InterestPoint > guide = null;//loadInterestPoints( dir, "interestpoints/tpId_0_viewSetupId_1.mRNA", scaleZ );
+			final List< InterestPoint > guide = null;loadInterestPoints( dir, "interestpoints/tpId_0_viewSetupId_1.mRNA", scaleZ );
 			final List< InterestPoint > alt = null;//loadInterestPoints( dir, "interestpoints/tpId_0_viewSetupId_3.altExon.fused", scaleZ );
 
 			drawInvisibleBoundingBox( univ, cells.getCells() );
