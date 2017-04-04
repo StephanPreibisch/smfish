@@ -44,8 +44,10 @@ public class VisualizeSegmentation
 		final boolean visualizeStretching = false;
 
 		// Loaded 560 cells, distributed in space: [271.95, 23.16, 70.057] -> [1170.60, 962.07, 186.56], dimensions (898.65, 938.91, 116.50)
-		final Load loader = new LoadBDV( scaleZ );
-		//final Load loader = new LoadDauer( 1.0, 1.0 );
+		//final Load loader = new LoadBDV( scaleZ );
+
+		// Loaded 672 cells, distributed in space: [755.245, 1561.19, 103.15] -> [2500.66, 14025.16, 1242.0], dimensions (1745.41, 12463.98, 1138.85)
+		final Load loader = new LoadDauer( 1.0 / 3, 0.85 );
 
 		this.cells = loader.load();
 
@@ -54,13 +56,13 @@ public class VisualizeSegmentation
 		if ( this.cells != null )
 		{
 			final Image3DUniverse univ = Java3DHelpers.initUniverse();
-			final List< InterestPoint > guide = loadInterestPoints( dir, "interestpoints/tpId_0_viewSetupId_1.mRNA", scaleZ );
-			final List< InterestPoint > alt = loadInterestPoints( dir, "interestpoints/tpId_0_viewSetupId_3.altExon.fused", scaleZ );
+			final List< InterestPoint > guide = null;//loadInterestPoints( dir, "interestpoints/tpId_0_viewSetupId_1.mRNA", scaleZ );
+			final List< InterestPoint > alt = null;//loadInterestPoints( dir, "interestpoints/tpId_0_viewSetupId_3.altExon.fused", scaleZ );
 
 			drawInvisibleBoundingBox( univ, cells.getCells() );
 			BranchGroup c = drawCells( univ, cells, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
-			BranchGroup i1 = drawInterestPoints( univ, alt, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, true );
-			BranchGroup i2 = drawInterestPoints( univ, guide, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, false );
+			BranchGroup i1 = null;//drawInterestPoints( univ, alt, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, true );
+			BranchGroup i2 = null;//drawInterestPoints( univ, guide, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, false );
 			
 			final RecolorCell rcc = new RecolorCell( univ, new Color3f( 1, 0, 0 ) );
 			univ.getCanvas().addMouseMotionListener( rcc );
@@ -80,8 +82,8 @@ public class VisualizeSegmentation
 			if ( visualizeStretching )
 			{
 				c.detach();
-				i1.detach();
-				i2.detach();
+				//i1.detach();
+				//i2.detach();
 			}
 
 			final FindWormOutline fwo = new FindWormOutline( visualizeStretching? null : univ, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()), 25 );
