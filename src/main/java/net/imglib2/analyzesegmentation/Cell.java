@@ -11,11 +11,11 @@ public class Cell implements RealLocalizable
 {
 	private final int id;
 
-	private int radius;
+	private float radius;
 
 	private final RealPoint position;
 
-	public Cell( final int id, final RealLocalizable position, final int radius )
+	public Cell( final int id, final RealLocalizable position, final float radius )
 	{
 		this.id = id;
 		this.position = new RealPoint( position );
@@ -28,7 +28,7 @@ public class Cell implements RealLocalizable
 		return "cell( " + id + ", " + Util.printCoordinates( position ) + ", " + radius + " )";
 	}
 
-	public int getRadius()
+	public float getRadius()
 	{
 		return radius;
 	}
@@ -57,7 +57,7 @@ public class Cell implements RealLocalizable
 		final RealPoint position = new RealPoint( n );
 		for ( int d = 0; d < n; ++d )
 			position.setPosition( Double.parseDouble( fields[ d ] ), d );
-		final int radius = Integer.parseInt( cell.getElementsByTagName( "radius" ).item( 0 ).getTextContent() );
+		final float radius = Float.parseFloat( cell.getElementsByTagName( "radius" ).item( 0 ).getTextContent() );
 		return new Cell( id, position, radius );
 	}
 
@@ -74,7 +74,7 @@ public class Cell implements RealLocalizable
 		final Element poselem = doc.createElement( "position" );
 		poselem.setAttribute( "data", data );
 		elem.appendChild( poselem );
-		elem.appendChild( intElement( doc, "radius", cell.getRadius() ) );
+		elem.appendChild( floatElement( doc, "radius", cell.getRadius() ) );
 
 		return elem;
 	}
@@ -83,6 +83,13 @@ public class Cell implements RealLocalizable
 	{
 		final Element e = doc.createElement( name );
 		e.appendChild( doc.createTextNode( Integer.toString( value ) ) );
+		return e;
+	}
+
+	public static Element floatElement( final Document doc, final String name, final float value )
+	{
+		final Element e = doc.createElement( name );
+		e.appendChild( doc.createTextNode( Float.toString( value ) ) );
 		return e;
 	}
 

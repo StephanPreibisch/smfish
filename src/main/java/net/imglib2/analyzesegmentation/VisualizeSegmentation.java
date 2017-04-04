@@ -27,6 +27,7 @@ import mpicbg.imglib.multithreading.SimpleMultiThreading;
 import mpicbg.spim.io.TextFileAccess;
 import net.imglib2.analyzesegmentation.load.Load;
 import net.imglib2.analyzesegmentation.load.LoadBDV;
+import net.imglib2.analyzesegmentation.load.LoadDauer;
 import spim.fiji.spimdata.interestpoints.InterestPoint;
 import spim.fiji.spimdata.interestpoints.InterestPointList;
 
@@ -42,10 +43,13 @@ public class VisualizeSegmentation
 	{
 		final boolean visualizeStretching = false;
 
-		// TODO: remove correction for wrong calibration
+		// Loaded 560 cells, distributed in space: [271.95, 23.16, 70.057] -> [1170.60, 962.07, 186.56], dimensions (898.65, 938.91, 116.50)
 		final Load loader = new LoadBDV( scaleZ );
+		//final Load loader = new LoadDauer( 1.0, 1.0 );
 
 		this.cells = loader.load();
+
+		System.out.println( loader );
 
 		if ( this.cells != null )
 		{

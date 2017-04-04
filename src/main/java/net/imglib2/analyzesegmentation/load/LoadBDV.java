@@ -19,8 +19,10 @@ public class LoadBDV extends Load
 
 	final double scaleZ;
 
-	public LoadBDV(  final double scaleZ  )
+	public LoadBDV( final double scaleZ )
 	{
+		super( 3 );
+
 		this.scaleZ = scaleZ;
 	}
 
@@ -54,20 +56,28 @@ public class LoadBDV extends Load
 				for ( int i = 0; i < nodes.getLength(); ++i )
 				{
 					final Cell cell = Cell.fromXml( ( Element ) nodes.item( i ) );
-					
+
 					cell.getPosition().setPosition( cell.getDoublePosition( 2 ) * scaleZ, 2 );
-					
+
+					for ( int d = 0; d < n; ++d )
+					{
+						min[ d ] = Math.min( min[ d ], cell.getDoublePosition( d ) );
+						max[ d ] = Math.max( max[ d ], cell.getDoublePosition( d ) );
+					}
+
 					cells.getCells().put( cell.getId(), cell );
 					if ( cell.getId() >= nextCellId )
 						nextCellId = cell.getId() + 1;
 				}
 
-				System.out.println( "Loaded " + cells.getCells().keySet().size() + " cells." );
+				this.numCells = cells.getCells().keySet().size();
 			}
 			catch ( final Exception e )
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				numCells = 0;
+				return null;
 			}
 
 			return cells;
@@ -78,4 +88,6 @@ public class LoadBDV extends Load
 		}
 	}
 
+	@Override
+	protected String validExtension() { return "xml"; }
 }
