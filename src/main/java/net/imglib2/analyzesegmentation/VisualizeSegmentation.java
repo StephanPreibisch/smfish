@@ -90,7 +90,7 @@ public class VisualizeSegmentation
 					i2.detach();
 			}
 
-			final FindWormOutline fwo = new FindWormOutline( visualizeStretching? null : univ, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()), 40 );
+			final FindWormOutline fwo = new FindWormOutline( visualizeStretching? null : univ, cells, ((Cell)dicv.getSphere1().getUserData()), ((Cell)dicv.getSphere2().getUserData()), 50 );
 			fwo.findOutline();
 
 			System.out.println( "done" );

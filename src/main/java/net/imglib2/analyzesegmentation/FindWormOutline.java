@@ -60,17 +60,18 @@ public class FindWormOutline
 		{
 			c++;
 			System.out.print( "segment=" + c );
-			i = fitNextSegment( i, score, 3, c );
+			i = fitNextSegment( i, score, 5, c );
 			System.out.println( ": " + i.getR0() + " " + i.getR1() );
 
 			segments.add( i );
 		}
-		while ( c < 36 && i.getR1() > 0.1 );
+		while ( c < 59 && i.getR1() > 0.1 );
 
 		// worm43:c=39
 		// worm41:c=27
 		
-		// dauer:c=47
+		// dauer em:c=47
+		// dauer confocal: 59
 		SimpleMultiThreading.threadWait( 250 );
 		makeScreenshot( c + 1 );
 	}
@@ -90,7 +91,7 @@ public class FindWormOutline
 		final float refL;
 
 		if ( FirstInlierCells.class.isInstance( previousInliers ) )
-			refL = sv.length() * 4f;
+			refL = sv.length() * 5.05f;
 		else
 			refL = sv.length() * cutLength;
 
@@ -109,7 +110,7 @@ public class FindWormOutline
 			// TODO: Remove manual stopping
 			int from, to;
 
-			if ( sementCount < 48 )
+			if ( sementCount < 4108 )
 			{
 				from = -1;
 				to = 1;
