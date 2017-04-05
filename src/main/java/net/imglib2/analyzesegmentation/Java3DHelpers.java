@@ -43,9 +43,12 @@ public class Java3DHelpers
 	
 	final static public Font statusbarFont = new Font("Cambria", Font.PLAIN, 12);
 
-	public static BranchGroup drawCells( final Image3DUniverse univ, final Cells cells, final Transform3D globalTransform, 
-			final Color3f color, final float transparency )
-	{		
+	public static BranchGroup drawCells(
+			final Image3DUniverse univ,
+			final Cells cells,
+			final Transform3D globalTransform,
+			final float transparency )
+	{
 		// get the scene
 		final BranchGroup parent = univ.getScene();
 
@@ -88,7 +91,7 @@ public class Java3DHelpers
 			appearance.getColoringAttributes().setCapability( ColoringAttributes.ALLOW_COLOR_READ );
 			appearance.getColoringAttributes().setCapability( ColoringAttributes.ALLOW_COLOR_WRITE );
 
-			final Sphere s = new Sphere( cell.getRadius(), Sphere.BODY, 10, appearance );
+			final Sphere s = new Sphere( cell.getRadius(), Sphere.BODY, 20, appearance );
 			s.setCapability( Sphere.ENABLE_APPEARANCE_MODIFY );
 			s.getShape().setCapability( Shape3D.ALLOW_APPEARANCE_WRITE );
 			transformGroup.addChild( s );

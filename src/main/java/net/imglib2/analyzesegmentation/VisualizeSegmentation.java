@@ -51,7 +51,7 @@ public class VisualizeSegmentation
 			final List< InterestPoint > alt = null;//loadInterestPoints( dir, "interestpoints/tpId_0_viewSetupId_3.altExon.fused", scaleZ );
 
 			Java3DHelpers.drawInvisibleBoundingBox( univ, cells.getCells() );
-			BranchGroup c = Java3DHelpers.drawCells( univ, cells, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
+			BranchGroup c = Java3DHelpers.drawCells( univ, cells, new Transform3D(), 0.15f );
 			BranchGroup i1 = null;//Java3DHelpers.drawInterestPoints( univ, alt, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, true );
 			BranchGroup i2 = null;//Java3DHelpers.drawInterestPoints( univ, guide, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f, false );
 
@@ -86,7 +86,7 @@ public class VisualizeSegmentation
 			if ( !visualizeStretching )
 				SimpleMultiThreading.threadHaltUnClean();
 
-			c = Java3DHelpers.drawCells( univ, StraightenWorm.stretchWormCells( fwo, cells, 0 ), new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
+			c = Java3DHelpers.drawCells( univ, StraightenWorm.stretchWormCells( fwo, cells, 0 ), new Transform3D(), 0.15f );
 			SimpleMultiThreading.threadWait( 5000 );
 			c.detach();
 
@@ -126,7 +126,7 @@ public class VisualizeSegmentation
 					out.println( cell.getId() + "\t" + cell.getFloatPosition( 0 ) + "\t" + cell.getFloatPosition( 1 )  + "\t" + cell.getFloatPosition( 2 ) );
 				out.close();
 	
-				c = Java3DHelpers.drawCells( univ, cellsNew, new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
+				c = Java3DHelpers.drawCells( univ, cellsNew, new Transform3D(), 0.15f );
 
 				SimpleMultiThreading.threadWait( 250 );
 				FindWormOutline.makeScreenshot( i++ );
