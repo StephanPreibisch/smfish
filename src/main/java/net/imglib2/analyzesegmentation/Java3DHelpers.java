@@ -49,6 +49,16 @@ public class Java3DHelpers
 			final Transform3D globalTransform,
 			final float transparency )
 	{
+		return drawCells( univ, cells, globalTransform, null, transparency );
+	}
+
+	public static BranchGroup drawCells(
+			final Image3DUniverse univ,
+			final Cells cells,
+			final Transform3D globalTransform,
+			final Color3f c,
+			final float transparency )
+	{
 		// get the scene
 		final BranchGroup parent = univ.getScene();
 
@@ -83,9 +93,17 @@ public class Java3DHelpers
 			transformGroup.setCapability( TransformGroup.ALLOW_CHILDREN_WRITE );
 
 			// add the sphere
-			final int r = random.nextInt( 192 );
+			int r = random.nextInt( 192 );
 			final Appearance appearance = new Appearance();
-			appearance.setColoringAttributes( new ColoringAttributes( new Color3f( r/255f, r/255f, r/255f ), ColoringAttributes.SHADE_GOURAUD ) );
+			if ( c == null )
+			{
+				appearance.setColoringAttributes( new ColoringAttributes( new Color3f( r/255f, r/255f, r/255f ), ColoringAttributes.SHADE_GOURAUD ) );
+			}
+			else
+			{
+				r += 64;
+				appearance.setColoringAttributes( new ColoringAttributes( new Color3f( c.x * r/255f, c.y * r/255f, c.z * r/255f ), ColoringAttributes.SHADE_GOURAUD ) );
+			}
 			appearance.setTransparencyAttributes( new TransparencyAttributes( TransparencyAttributes.NICEST, transparency ) );
 
 			appearance.getColoringAttributes().setCapability( ColoringAttributes.ALLOW_COLOR_READ );
@@ -344,7 +362,7 @@ public class Java3DHelpers
 
 	public static Image3DUniverse initUniverse()
 	{
-		final Image3DUniverse uni = new Image3DUniverse( 1800, 1200 );
+		final Image3DUniverse uni = new Image3DUniverse( 1800, 1000 );
 		uni.show();
 
 		setBackgroundColor( uni, backgroundColor );
