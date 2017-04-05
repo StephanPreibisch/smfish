@@ -67,8 +67,8 @@ public class LoadDauer extends Load
 					{
 						if ( locations.size() > 0 )
 						{
-							//if ( id - 1 != nextCellId )
-							//	System.out.println( nextCellId + " >> " + id );
+							if ( id - 1 != nextCellId )
+								System.out.println( nextCellId + " >> " + id );
 
 							// make a new cell from the old data if there is any
 							final double[] avg = avg( locations );
