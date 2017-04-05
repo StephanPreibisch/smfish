@@ -42,7 +42,7 @@ public class VisualizeSegmentation
 
 	public VisualizeSegmentation()
 	{
-		final boolean visualizeStretching = false;
+		final boolean visualizeStretching = true;
 
 		// Loaded 560 cells, distributed in space: [271.95, 23.16, 70.057] -> [1170.60, 962.07, 186.56], dimensions (898.65, 938.91, 116.50)
 		//final Load loader = new LoadBDV( scaleZ );
@@ -97,6 +97,10 @@ public class VisualizeSegmentation
 
 			if ( !visualizeStretching )
 				SimpleMultiThreading.threadHaltUnClean();
+
+			c = drawCells( univ, StraightenWorm.stretchWormCells( fwo, cells, 0 ), new Transform3D(), new Color3f( 1, 0, 1 ), 0.15f );
+			SimpleMultiThreading.threadWait( 2000 );
+			c.detach();
 
 			int i = 0;
 
