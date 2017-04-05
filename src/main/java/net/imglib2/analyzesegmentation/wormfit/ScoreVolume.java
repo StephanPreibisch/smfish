@@ -17,7 +17,7 @@ public class ScoreVolume implements Score
 	public double score( final InlierCells previous, final InlierCells cells )
 	{
 		// good
-		final double nc = cells.inliers.size() + 2;
+		final double nc = cells.inliers.size();
 
 		// bad
 		final double vd = vectorDifference( previous, cells );
@@ -27,7 +27,7 @@ public class ScoreVolume implements Score
 		// making smaller is good, bigger not
 		final double rf = rd < 0 ? 0.1 : 10;
 			
-		return ( 4 * nc * nc * nc * nc * nc * nc ) / ( Math.sqrt( vol ) + rf*rd*rd + 5*vd );
+		return ( 4 * nc * nc * nc ) / ( Math.sqrt( vol ) + rf*rd*rd + 1000*vd );
 	}
 
 	protected double vectorDifference( final InlierCells previous, final InlierCells cells )
