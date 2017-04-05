@@ -4,12 +4,6 @@ import java.io.File;
 import java.util.List;
 
 import javax.swing.JFileChooser;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import net.imglib2.RealPoint;
 import net.imglib2.analyzesegmentation.Cell;
