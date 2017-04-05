@@ -21,15 +21,12 @@ public abstract class Load implements RealInterval
 
 	public Load( final int numDimensions )
 	{
-		this.min = new double[ numDimensions ];
-		this.max = new double[ numDimensions ];
 		this.n = numDimensions;
 
-		for ( int d = 0; d < n; ++d )
-		{
-			min[ d ] = Double.MAX_VALUE;
-			max[ d ] = -Double.MAX_VALUE;
-		}
+		this.min = new double[ numDimensions ];
+		this.max = new double[ numDimensions ];
+
+		resetMinMax();
 
 		this.fileChooser = createFileChooser();
 	}
@@ -40,6 +37,15 @@ public abstract class Load implements RealInterval
 	 */
 	public abstract Cells load();
 	protected abstract String validExtension();
+
+	protected void resetMinMax()
+	{
+		for ( int d = 0; d < n; ++d )
+		{
+			min[ d ] = Double.MAX_VALUE;
+			max[ d ] = -Double.MAX_VALUE;
+		}
+	}
 
 	protected int fileChooser()
 	{
