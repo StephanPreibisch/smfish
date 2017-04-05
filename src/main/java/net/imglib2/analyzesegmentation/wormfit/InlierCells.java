@@ -1,8 +1,5 @@
 package net.imglib2.analyzesegmentation.wormfit;
 
-import ij3d.Content;
-import ij3d.Image3DUniverse;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,11 +10,12 @@ import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Point3f;
 import org.scijava.vecmath.Vector3f;
 
+import customnode.CustomLineMesh;
+import ij3d.Content;
+import ij3d.Image3DUniverse;
 import net.imglib2.analyzesegmentation.Algebra;
 import net.imglib2.analyzesegmentation.Cells;
-import net.imglib2.analyzesegmentation.VisualizeSegmentation;
-
-import customnode.CustomLineMesh;
+import net.imglib2.analyzesegmentation.Java3DHelpers;
 
 public class InlierCells
 {
@@ -91,7 +89,7 @@ public class InlierCells
 
 		if ( drawLine )
 		{
-			this.vector = VisualizeSegmentation.drawLine( univ, p0, p1, "segment " + counter.getAndIncrement() );
+			this.vector = Java3DHelpers.drawLine( univ, p0, p1, "segment " + counter.getAndIncrement() );
 			this.vector.setTransparency( vectorTransparency );
 			this.vector.setColor( vectorCol );
 			((CustomLineMesh)this.vector.getContent().getChild( 0 )).setLineWidth( linewidth );
@@ -105,7 +103,7 @@ public class InlierCells
 			final Point3f pc0 = new Point3f( 0, -v0.length()/2, 0 );
 			final Point3f pc1 = new Point3f( 0, v0.length()/2, 0 );
 	
-			this.truncatedCone = VisualizeSegmentation.drawTruncatedCone( r0, r1, v0.length(), univ, Algebra.getTransformation( pc0, pc1, p0, p1, false ), truncatedConeColor, truncatedConeTransparency );
+			this.truncatedCone = Java3DHelpers.drawTruncatedCone( r0, r1, v0.length(), univ, Algebra.getTransformation( pc0, pc1, p0, p1, false ), truncatedConeColor, truncatedConeTransparency );
 		}
 	}
 
