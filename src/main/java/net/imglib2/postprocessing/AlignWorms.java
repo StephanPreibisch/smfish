@@ -202,12 +202,13 @@ public class AlignWorms
 		Java3DHelpers.drawInvisibleBoundingBox( univ, confocal.getCells() );
 
 		final float transparency = 0.3f;
-		final Color3f colConfocal = new Color3f( 0.5f, 0, 0 );
-		final Color3f colEM = new Color3f( 0, 0, 0.5f );
+		final Color3f colConfocal = new Color3f( 1f, 0, 0 );
+		final Color3f colEM = new Color3f( 0, 0, 1f );
 
-		BranchGroup groupConfocal = Java3DHelpers.drawCells( univ, confocal, new Transform3D(), transparency );
-		BranchGroup groupEM = Java3DHelpers.drawCells( univ, em, new Transform3D(), transparency );
+		BranchGroup groupConfocal = Java3DHelpers.drawCells( univ, confocal, new Transform3D(), colConfocal, transparency );
+		BranchGroup groupEM = Java3DHelpers.drawCells( univ, em, new Transform3D(), colEM, transparency );
 
+		SimpleMultiThreading.threadHaltUnClean();
 		int degrees = 0;
 		int inc = 5;
 
