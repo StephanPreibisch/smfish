@@ -38,7 +38,7 @@ public class LoadDauer extends Load
 			System.out.println( "loading annotions from " + file );
 
 			final Cells cells = new Cells();
-			int nextCellId = -1;
+			int currentCellId = -1;
 
 			cells.getCells().clear();
 			cells.getSpheres().clear();
@@ -58,50 +58,32 @@ public class LoadDauer extends Load
 					String[] entries = line.substring( 3, line.length() ).split( " " );
 	
 					final int id = Integer.parseInt( entries[ 0 ] );
-					final double x = Double.parseDouble( entries[ 1 ] );
-					final double y = Double.parseDouble( entries[ 2 ] );
-					final double z = Double.parseDouble( entries[ 3 ] );
 	
-					// new cell
-					if ( id != nextCellId )
+					// new cell?
+					if ( id != currentCellId )
 					{
 						if ( locations.size() > 0 )
 						{
-							if ( id - 1 != nextCellId )
-								System.out.println( nextCellId + " >> " + id );
+							if ( id - 1 != currentCellId )
+								System.out.println( currentCellId + " >> " + id );
 
-							// make a new cell from the old data if there is any
-							final double[] avg = avg( locations );
-							final double[] stdev = stdev( locations, avg );
-							final double radius = ( stdev[ 0 ] + stdev[ 1 ] + stdev[ 2 ] ) / 2.0;
-
-							final Cell cell = new Cell( nextCellId, new RealPoint(
-									scale * avg[ 1 ], // switch xy
-									scale * avg[ 0 ],
-									scale * scaleZ * avg[ 2 ] ),
-									(float)( scale * radius ) );
-
-							if ( cells.getCells().containsKey( cell.getId() ) )
-								System.out.println(  "collision " + cell.getId() );
-
-							cells.getCells().put( cell.getId(), cell );
-
-							for ( int d = 0; d < n; ++d )
-							{
-								min[ d ] = Math.min( min[ d ], cell.getDoublePosition( d ) );
-								max[ d ] = Math.max( max[ d ], cell.getDoublePosition( d ) );
-							}
-
+							addCell( locations, cells, currentCellId );
 						}
 
-						locations.clear();
-						nextCellId = id;
+						currentCellId = id;
 					}
+
+					final double x = Double.parseDouble( entries[ 1 ] );
+					final double y = Double.parseDouble( entries[ 2 ] );
+					final double z = Double.parseDouble( entries[ 3 ] );
 
 					locations.add( new double[]{ x, y, z } );
 				}
 
-				numCells = cells.getCells().keySet().size();
+				// add the last cell
+				addCell( locations, cells, currentCellId );
+
+				this.numCells = cells.getCells().keySet().size();
 
 				in.close();
 			}
@@ -118,6 +100,36 @@ public class LoadDauer extends Load
 		{
 			return null;
 		}
+	}
+
+	protected void addCell( final ArrayList< double[] > locations, final Cells cells, final int id )
+	{
+		if ( locations.size() > 0 )
+		{
+			// make a new cell from the old data if there is any
+			final double[] avg = avg( locations );
+			final double[] stdev = stdev( locations, avg );
+			final double radius = ( stdev[ 0 ] + stdev[ 1 ] + stdev[ 2 ] ) / 2.0;
+
+			final Cell cell = new Cell( id, new RealPoint(
+					scale * avg[ 1 ], // switch xy
+					scale * avg[ 0 ],
+					scale * scaleZ * avg[ 2 ] ),
+					(float)( scale * radius ) );
+
+			if ( cells.getCells().containsKey( cell.getId() ) )
+				System.out.println(  "collision " + cell.getId() );
+
+			cells.getCells().put( cell.getId(), cell );
+
+			for ( int d = 0; d < n; ++d )
+			{
+				min[ d ] = Math.min( min[ d ], cell.getDoublePosition( d ) );
+				max[ d ] = Math.max( max[ d ], cell.getDoublePosition( d ) );
+			}
+		}
+
+		locations.clear();
 	}
 
 	@Override
