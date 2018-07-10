@@ -33,7 +33,7 @@ public abstract class Load implements RealInterval
 
 	/**
 	 * Load the cells and populate min, max, numCells
-	 * @return
+	 * @return the cells
 	 */
 	public abstract Cells load();
 	protected abstract String validExtension();

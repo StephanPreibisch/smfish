@@ -51,15 +51,15 @@ public class Algebra
 	}
 
 	/**
-	 * Given a line segment from p0 >> p1, compute the relative location 
-	 * (p0 = 0 > p1 = 1) on this line where the distance to point q is minimal.
+	 * Given a line segment from p0 to p1, compute the relative location 
+	 * (p0 = 0 ... p1 = 1) on this line where the distance to point q is minimal.
 	 * 
 	 * See: http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
 	 * 
 	 * @param p0 - line segment start
 	 * @param p1 - line segment end
 	 * @param q - query point
-	 * @return
+	 * @return the relative location
 	 */
 	public static double pointOfShortestDistance( final Point3d p0, final Point3d p1, final Point3d q )
 	{
@@ -70,7 +70,7 @@ public class Algebra
 	}
 
 	/**
-	 * Given a vector defined by a line segment from p0 >> p1, compute the shortest 
+	 * Given a vector defined by a line segment from p0 to p1, compute the shortest 
 	 * squared distance between point q and the vector.
 	 * 
 	 * See: http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
@@ -78,7 +78,7 @@ public class Algebra
 	 * @param p0 - line segment start
 	 * @param p1 - line segment end
 	 * @param q - query point
-	 * @return
+	 * @return the square distance
 	 */
 	public static double shortestSquaredDistance( final Point3d p0, final Point3d p1, final Point3d q )
 	{
@@ -93,7 +93,7 @@ public class Algebra
 	}
 
 	/**
-	 * Given a vector defined by a line segment from p0 >> p1, compute the shortest distance 
+	 * Given a vector defined by a line segment from p0 to p1, compute the shortest distance 
 	 * between point q and the vector.
 	 * 
 	 * See: http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
@@ -101,7 +101,7 @@ public class Algebra
 	 * @param p0 - line segment start
 	 * @param p1 - line segment end
 	 * @param q - query point
-	 * @return
+	 * @return the distance
 	 */
 	public static double shortestDistance( final Point3d p0, final Point3d p1, final Point3d q )
 	{
@@ -109,7 +109,7 @@ public class Algebra
 	}
 
 	/**
-	 * Given a line segment from p0 >> p1, compute the relative location (p0 = 0 > p1 = 1) on
+	 * Given a line segment from p0 to p1, compute the relative location (p0 = 0 ... p1 = 1) on
 	 * this line where the distance to point q is minimal as well as the shortest squared distance
 	 * to the point.
 	 * 
@@ -137,9 +137,9 @@ public class Algebra
 	 * Computes a Transform3D that will rotate vector v0 into the direction of vector v1.
 	 * Note: vectors MUST be normalized for this to work!
 	 *
-	 * @param v0
-	 * @param v1
-	 * @return
+	 * @param v0 - vector 0
+	 * @param v1 - vector 1
+	 * @return the transformation
 	 */
 	public static Transform3D getRotation( final Vector3d v0, final Vector3d v1 )
 	{
@@ -172,7 +172,7 @@ public class Algebra
 	 * @param p10 - second line segment start
 	 * @param p11 - second line segment end
 	 * @param scale - if the Transform3D should also scale the line segment
-	 * @return
+	 * @return the transformation
 	 */
 	public static Transform3D getTransformation(
 			final Point3d p00,

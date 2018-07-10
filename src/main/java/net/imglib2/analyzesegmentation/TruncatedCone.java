@@ -448,11 +448,6 @@ public class TruncatedCone extends Primitive
     return startRadius;
     }
 
-    /**
-     * Returns the height of the cylinder
-     *
-     * @since Java 3D 1.2.1
-     */
     public float getHeight() {
     return height;
     }

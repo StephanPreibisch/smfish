@@ -28,7 +28,7 @@ import mpicbg.models.Point;
  * 
  * @author Stephan Preibisch
  *
- * @param <P> - if a special extension of {@link Point} is necessary, otherwise just implement Function<Point>
+ * P - if a special extension of {@link Point} is necessary, otherwise just implement Function<Point>
  */
 public interface Function< P extends Point >
 {

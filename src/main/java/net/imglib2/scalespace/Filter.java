@@ -1,11 +1,9 @@
 package net.imglib2.scalespace;
 
-import ij.ImageJ;
-import ij.process.FloatProcessor;
-
 import java.io.File;
 import java.util.ArrayList;
 
+import ij.ImageJ;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -23,12 +21,12 @@ import spim.process.cuda.CUDATools;
 
 /**
  * 
- * @author Stephan Saalfeld <saalfeld@mpi-cbg.de>
+ * @author Stephan Saalfeld
  * @version 0.2b
  */
 public class Filter
 {
-	/**
+	/*
 	 * Create a downsampled {@link FloatProcessor}.
 	 * 
 	 * @param source the source image
@@ -99,7 +97,7 @@ public class Filter
 		return target;
 	}
 
-	/**
+	/*
 	 * Smooth with a Gaussian kernel that represents downsampling at a given
 	 * scale factor and sourceSigma.
 	 */
@@ -123,7 +121,7 @@ public class Filter
 		//new GaussianBlur().blurFloat( source, sigma, sigma, 0.01 );
 	}
 
-	/**
+	/*
 	 * Create a 1d-Gaussian kernel of appropriate size.
 	 *
 	 * @param sigma Standard deviation of the Gaussian kernel

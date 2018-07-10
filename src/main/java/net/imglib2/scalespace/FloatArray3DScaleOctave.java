@@ -7,31 +7,19 @@ import spim.process.cuda.CUDASeparableConvolutionFunctions;
 import mpicbg.imagefeatures.FloatArray2D;
 
 /**
- * single octave of a discrete {@link FloatArray2DScaleSpace}
+ * single octave of a discrete FloatArray2DScaleSpace
  * 
  * This class is optimized for the Difference Of Gaussian detector used in
  * David Lowe's SIFT-algorithm \citep{Loew04}.
  * 
  * The scale space itself consists of an arbitrary number of octaves.  This
- * number is implicitly defined by the minimal image size {@link #MIN_SIZE}.
+ * number is implicitly defined by the minimal image size #IN_SIZE.
  * Octaves contain overlapping scales of the scalespace.  Thus it is possible
  * to execute several operations that depend on adjacent scales within one
  * octave.
  *  
- * BibTeX:
- * <pre>
- * &#64;article{Lowe04,
- *   author  = {David G. Lowe},
- *   title   = {Distinctive Image Features from Scale-Invariant Keypoints},
- *   journal = {International Journal of Computer Vision},
- *   year    = {2004},
- *   volume  = {60},
- *   number  = {2},
- *   pages   = {91--110},
- * }
- * </pre>
  * 
- * @author Stephan Saalfeld <saalfeld@mpi-cbg.de>
+ * @author Stephan Saalfeld
  * @version 0.1b
  */
 public class FloatArray3DScaleOctave
@@ -107,7 +95,7 @@ public class FloatArray3DScaleOctave
 		return d[ i ];
 	}
 
-	/**
+	/*
 	 * Constructor
 	 * 
 	 * @param img image being the first gaussian instance of the scale octave
@@ -157,7 +145,7 @@ public class FloatArray3DScaleOctave
 		d = null;
 	}
 	
-	/**
+	/*
 	 * Constructor
 	 * 
 	 * faster initialisation with precomputed gaussian kernels
@@ -217,7 +205,7 @@ public class FloatArray3DScaleOctave
 	}
 	
 	
-	/**
+	/*
 	 * build the scale octave
 	 */
 	public boolean build()
@@ -273,14 +261,14 @@ public class FloatArray3DScaleOctave
 
 
 	/**
-	 * downsample {@link src} by simply using every second pixel into
-	 * {@link dst}
+	 * downsample src by simply using every second pixel into
+	 * dst
 	 * 
-	 * For efficiency reasons, the dimensions of {@link dst} are not checked,
+	 * For efficiency reasons, the dimensions of dst are not checked,
 	 * that is, you have to take care, that
-	 * dst.width == src.width / 2 + src.width % 2 &&
-	 * dst.height == src.height / 2 + src.height % 2 &&
-	 * dst.depth == src.depth / 2 + src.depth % 2.
+	 * dst.width == src.width / 2 + src.width mod 2 and
+	 * dst.height == src.height / 2 + src.height mod 2 and
+	 * dst.depth == src.depth / 2 + src.depth mod 2.
 	 * 
 	 * @param src the source image
 	 * @param dst destination image
@@ -436,13 +424,13 @@ public class FloatArray3DScaleOctave
 	}
 	
 	/**
-	 * upsample {@link src} by linearly interpolating into {@link dst}
+	 * upsample src by linearly interpolating into dst
 	 * 
-	 * For efficiency reasons, the dimensions of {@link dst} are not checked,
+	 * For efficiency reasons, the dimensions of dst are not checked,
 	 * that is, you have to take care, that
-	 * src.width == dst.width / 2 + dst.width % 2 &&
-	 * src.height == dst.height / 2 + dst.height % 2 &&
-	 * src.depth == dst.depth / 2 + dst.depth % 2.
+	 * src.width == dst.width / 2 + dst.width mod 2 and
+	 * src.height == dst.height / 2 + dst.height mod 2 and
+	 * src.depth == dst.depth / 2 + dst.depth mod 2.
 	 * 
 	 * @param src the source image
 	 * @param dst destination image
