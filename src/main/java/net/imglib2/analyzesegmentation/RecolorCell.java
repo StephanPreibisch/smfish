@@ -14,19 +14,6 @@ import org.scijava.vecmath.Color3f;
 import ij3d.Image3DUniverse;
 import ij3d.ImageCanvas3D;
 
-//import javax.media.j3d.Node;
-
-//import com.sun.j3d.utils.picking.PickCanvas;
-//import com.sun.j3d.utils.picking.PickResult;
-//import com.sun.j3d.utils.picking.PickTool;
-
-//import javax.media.j3d.PickInfo;
-//import javax.media.j3d.SceneGraphPath;
-//import javax.vecmath.Color3f;
-
-//import com.sun.j3d.utils.geometry.Sphere;
-//import com.sun.j3d.utils.pickfast.PickCanvas;
-
 public class RecolorCell implements MouseMotionListener
 {
 	final PickCanvas pickCanvas;
