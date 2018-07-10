@@ -18,11 +18,6 @@
   		<groupId>sc.fiji</groupId>
   		<artifactId>3D_Viewer</artifactId>
   	</dependency>
-  	<dependency>
-  		<groupId>net.preibisch</groupId>
-  		<artifactId>multiview-reconstruction</artifactId>
-  		<version>0.2.8</version>
-  	</dependency>
   </dependencies>
 
 	<repositories>
