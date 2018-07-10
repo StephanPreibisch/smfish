@@ -14,10 +14,10 @@ public abstract class Load implements RealInterval
 {
 	final JFileChooser fileChooser;
 
-	int numCells = 0;
+	protected int numCells = 0;
 
-	final int n;
-	final double[] min, max;
+	final protected int n;
+	final protected double[] min, max;
 
 	public Load( final int numDimensions )
 	{
