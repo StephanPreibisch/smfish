@@ -1,6 +1,6 @@
 package net.imglib2.analyzesegmentation.wormfit;
 
-import javax.vecmath.Vector3d;
+import org.scijava.vecmath.Vector3d;
 
 /**
  * Maximizes the cells per volume and rewards more cells
