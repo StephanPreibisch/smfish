@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Label;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -298,6 +299,29 @@ public class Java3DHelpers
 		univ.addTriangleMesh( meshes, new Color3f( 1, 1, 1 ), "nuclei" );
 
 		return null;
+	}
+
+	public static Content drawInvisibleBoundingBox( final Image3DUniverse univ, final Collection< ? extends Map< Integer, Cell > > cellsCollection )
+	{
+		int size = 0;
+
+		for ( final Map< Integer, Cell > cells : cellsCollection )
+			size += cells.values().size();
+
+		final double[][] positions = new double[ size ][ 3 ];
+
+		int i = 0;
+
+		for ( final Map< Integer, Cell > cells : cellsCollection )
+			for ( final Cell cell : cells.values() )
+			{
+				for ( int d = 0; d < 3; ++d )
+					positions[ i ][ d ] = cell.getPosition().getDoublePosition( d );
+	
+				++i;
+			}
+
+		return drawInvisibleBoundingBox( univ, positions );
 	}
 
 	public static Content drawInvisibleBoundingBox( final Image3DUniverse univ, final Map< Integer, Cell > cells )
