@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import mpicbg.models.Point;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
-import net.imglib2.algorithm.region.localneighborhood.Neighborhood;
-import net.imglib2.algorithm.region.localneighborhood.RectangleShape;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.type.numeric.real.FloatType;
@@ -98,7 +96,7 @@ public class MeasureSplicing
 		final RandomAccess< FloatType > r2 = alt.randomAccess();
 		
 		final int n = r1.numDimensions();
-		final int[] l = new int[ n ];
+		final long[] l = new long[ n ];
 		
 		double min1 = Double.MAX_VALUE;
 		double min2 = Double.MAX_VALUE;

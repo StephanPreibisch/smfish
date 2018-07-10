@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import mpicbg.models.AbstractModel;
-import mpicbg.models.CoordinateTransform;
 import mpicbg.models.IllDefinedDataPointsException;
 import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
@@ -46,8 +45,8 @@ public abstract class AbstractFunction< M extends AbstractFunction< M > > extend
 	}
 
 	@Override
-	public float[] apply( final float[] location ) { return null; }
+	public double[] apply( final double[] location ) { return null; }
 
 	@Override
-	public void applyInPlace( final float[] location ) {}	
+	public void applyInPlace( final double[] location ) {}	
 }

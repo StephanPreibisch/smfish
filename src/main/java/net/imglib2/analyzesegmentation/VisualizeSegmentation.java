@@ -9,8 +9,8 @@ import org.scijava.java3d.BranchGroup;
 import org.scijava.java3d.Transform3D;
 import org.scijava.java3d.utils.geometry.Sphere;
 import org.scijava.vecmath.Color3f;
-import org.scijava.vecmath.Point3f;
-import org.scijava.vecmath.Vector3f;
+import org.scijava.vecmath.Point3d;
+import org.scijava.vecmath.Vector3d;
 
 import ij3d.Image3DUniverse;
 import mpicbg.imglib.multithreading.SimpleMultiThreading;
@@ -183,15 +183,15 @@ public class VisualizeSegmentation
 	public static void main( String[] args )
 	{
 		System.out.println( "Java: " + System.getProperty( "java.version" ) );
-		final Point3f p0 = new Point3f( 0, 0, 0 );
-		final Point3f p1 = new Point3f( 2, 0, 0 );
-		final Point3f q = new Point3f( 0.9f, 1, 0 );
+		final Point3d p0 = new Point3d( 0, 0, 0 );
+		final Point3d p1 = new Point3d( 2, 0, 0 );
+		final Point3d q = new Point3d( 0.9f, 1, 0 );
 		
 		System.out.println( Algebra.pointOfShortestDistance( p0, p1, q ) );
 		System.out.println( Algebra.shortestDistance( p0, p1, q ) );
 
-		final Vector3f v1 = new Vector3f( 1.5f, 0, 0 );
-		final Vector3f v2 = new Vector3f( 324, 123.0f, -1323 );
+		final Vector3d v1 = new Vector3d( 1.5f, 0, 0 );
+		final Vector3d v2 = new Vector3d( 324, 123.0f, -1323 );
 
 		Algebra.normalizeLength( v2, v1 );
 

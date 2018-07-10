@@ -1,9 +1,9 @@
 package net.imglib2.analyzesegmentation;
 
 import org.scijava.java3d.Transform3D;
-import org.scijava.vecmath.AxisAngle4f;
-import org.scijava.vecmath.Point3f;
-import org.scijava.vecmath.Vector3f;
+import org.scijava.vecmath.AxisAngle4d;
+import org.scijava.vecmath.Point3d;
+import org.scijava.vecmath.Vector3d;
 
 /**
  *  Copyright (c) 2014 Stephan Preibisch
@@ -27,21 +27,21 @@ import org.scijava.vecmath.Vector3f;
 public class Algebra
 {
 	/**
-	 * Normalize the length of Vector3f v1 so that it has the same length as Vector3f v2
+	 * Normalize the length of Vector3d v1 so that it has the same length as Vector3d v2
 	 * @param v1 - to be normalized
 	 * @param v2 - the reference vector
 	 */
-	public static void normalizeLength( final Vector3f v1, final Vector3f v2 )
+	public static void normalizeLength( final Vector3d v1, final Vector3d v2 )
 	{
 		normalizeLength( v1, v2.length() );
 	}
 
 	/**
-	 * Normalize the length of Vector3f v1 so that it has length l
+	 * Normalize the length of Vector3d v1 so that it has length l
 	 * @param v - to be normalized
 	 * @param l - new length
 	 */
-	public static void normalizeLength( final Vector3f v, final double l )
+	public static void normalizeLength( final Vector3d v, final double l )
 	{
 		final double c = l / v.length();
 
@@ -61,10 +61,10 @@ public class Algebra
 	 * @param q - query point
 	 * @return
 	 */
-	public static double pointOfShortestDistance( final Point3f p0, final Point3f p1, final Point3f q )
+	public static double pointOfShortestDistance( final Point3d p0, final Point3d p1, final Point3d q )
 	{
-		final Vector3f v0 = new Vector3f( p0.x - q.x, p0.y - q.y, p0.z - q.z );
-		final Vector3f v1 = new Vector3f( p1.x - p0.x, p1.y - p0.y, p1.z - p0.z );
+		final Vector3d v0 = new Vector3d( p0.x - q.x, p0.y - q.y, p0.z - q.z );
+		final Vector3d v1 = new Vector3d( p1.x - p0.x, p1.y - p0.y, p1.z - p0.z );
 
 		return -v0.dot( v1 ) / v1.lengthSquared();
 	}
@@ -80,14 +80,14 @@ public class Algebra
 	 * @param q - query point
 	 * @return
 	 */
-	public static double shortestSquaredDistance( final Point3f p0, final Point3f p1, final Point3f q )
+	public static double shortestSquaredDistance( final Point3d p0, final Point3d p1, final Point3d q )
 	{
-		final Vector3f v0 = new Vector3f( p0.x - q.x, p0.y - q.y, p0.z - q.z );
-		final Vector3f v1 = new Vector3f( p1.x - p0.x, p1.y - p0.y, p1.z - p0.z );
+		final Vector3d v0 = new Vector3d( p0.x - q.x, p0.y - q.y, p0.z - q.z );
+		final Vector3d v1 = new Vector3d( p1.x - p0.x, p1.y - p0.y, p1.z - p0.z );
 
-		final float v0ls = v0.lengthSquared();
-		final float v1ls = v1.lengthSquared();
-		final float dotp = v0.dot( v1 );
+		final double v0ls = v0.lengthSquared();
+		final double v1ls = v1.lengthSquared();
+		final double dotp = v0.dot( v1 );
 
 		return ( v0ls * v1ls - dotp * dotp ) / v1ls;
 	}
@@ -103,7 +103,7 @@ public class Algebra
 	 * @param q - query point
 	 * @return
 	 */
-	public static double shortestDistance( final Point3f p0, final Point3f p1, final Point3f q )
+	public static double shortestDistance( final Point3d p0, final Point3d p1, final Point3d q )
 	{
 		return Math.sqrt( shortestSquaredDistance( p0, p1, q ) );
 	}
@@ -120,14 +120,14 @@ public class Algebra
 	 * @param q - query point
 	 * @param result - result[ 0 ] will contain the squared distance, result[ 1 ] the relative point on the segmented line
 	 */
-	public static void shortestSquaredDistanceAndPoint( final Point3f p0, final Point3f p1, final Point3f q, final double[] result )
+	public static void shortestSquaredDistanceAndPoint( final Point3d p0, final Point3d p1, final Point3d q, final double[] result )
 	{
-		final Vector3f v0 = new Vector3f( p0.x - q.x, p0.y - q.y, p0.z - q.z );
-		final Vector3f v1 = new Vector3f( p1.x - p0.x, p1.y - p0.y, p1.z - p0.z );
+		final Vector3d v0 = new Vector3d( p0.x - q.x, p0.y - q.y, p0.z - q.z );
+		final Vector3d v1 = new Vector3d( p1.x - p0.x, p1.y - p0.y, p1.z - p0.z );
 
-		final float v0ls = v0.lengthSquared();
-		final float v1ls = v1.lengthSquared();
-		final float dotp = v0.dot( v1 );
+		final double v0ls = v0.lengthSquared();
+		final double v1ls = v1.lengthSquared();
+		final double dotp = v0.dot( v1 );
 
 		result[ 0 ] = ( v0ls * v1ls - dotp * dotp ) / v1ls;
 		result[ 1 ] = -dotp / v1ls;
@@ -141,25 +141,25 @@ public class Algebra
 	 * @param v1
 	 * @return
 	 */
-	public static Transform3D getRotation( final Vector3f v0, final Vector3f v1 )
+	public static Transform3D getRotation( final Vector3d v0, final Vector3d v1 )
 	{
 		// the rotation axis is defined by the cross product
-		final Vector3f rotAxis = new Vector3f();
+		final Vector3d rotAxis = new Vector3d();
 		rotAxis.cross( v0, v1 );
 		rotAxis.normalize();
 
 		// if the cross product returns NaN, the vectors already point in the same direction,
 		// so we return the identity transform
-		if ( Float.isNaN( rotAxis.x ) )
+		if ( Double.isNaN( rotAxis.x ) )
 			return new Transform3D();
 
 		// the rotation angle is defined by the dot product (if normalized)
 		// make sure it is really between [-1,1], numerical instabilities can lead to e.g. 1.0000001
-		final float angle = Math.min( 1.0f, Math.max( -1.0f, v0.dot( v1 ) ) );
+		final double angle = Math.min( 1.0f, Math.max( -1.0f, v0.dot( v1 ) ) );
 
 		// Do an axis/angle 3d transformation
 		final Transform3D t = new Transform3D();
-		t.set( new AxisAngle4f( rotAxis, (float)Math.acos( angle ) ) );
+		t.set( new AxisAngle4d( rotAxis, Math.acos( angle ) ) );
 
 		return t;
 	}
@@ -175,30 +175,30 @@ public class Algebra
 	 * @return
 	 */
 	public static Transform3D getTransformation(
-			final Point3f p00,
-			final Point3f p01,
-			final Point3f p10,
-			final Point3f p11,
+			final Point3d p00,
+			final Point3d p01,
+			final Point3d p10,
+			final Point3d p11,
 			final boolean scale )
 	{
 		// compute the vectors
-		final Vector3f v0 = new Vector3f( p01.x - p00.x, p01.y - p00.y, p01.z - p00.z );
-		final Vector3f v1 = new Vector3f( p11.x - p10.x, p11.y - p10.y, p11.z - p10.z );
+		final Vector3d v0 = new Vector3d( p01.x - p00.x, p01.y - p00.y, p01.z - p00.z );
+		final Vector3d v1 = new Vector3d( p11.x - p10.x, p11.y - p10.y, p11.z - p10.z );
 
 		// the final transformation
 		Transform3D transform = new Transform3D();
 
 		// first translate to origin
-		transform.setTranslation( new Vector3f( -p00.x, -p00.y, -p00.z ) );
+		transform.setTranslation( new Vector3d( -p00.x, -p00.y, -p00.z ) );
 
 		// second, scale if wanted
 		if ( scale )
 		{
-			final float scaling = v1.length() / v0.length();
+			final double scaling = v1.length() / v0.length();
 
 			// if the scaling turns out to be NaN, v0 must be of length zero,
 			// in this case we just do nothing
-			if ( !Float.isNaN( scaling ) )
+			if ( !Double.isNaN( scaling ) )
 				transform.setScale( scaling );
 		}
 
@@ -210,7 +210,7 @@ public class Algebra
 
 		// fourth, preconcatenate the translation to the origin of the second line segment
 		final Transform3D t = new Transform3D();
-		t.setTranslation( new Vector3f( p10.x, p10.y, p10.z ) );
+		t.setTranslation( new Vector3d( p10.x, p10.y, p10.z ) );
 		transform.mul( t, transform );
 
 		return transform;

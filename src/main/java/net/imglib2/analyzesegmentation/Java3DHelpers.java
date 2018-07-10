@@ -21,6 +21,8 @@ import org.scijava.java3d.utils.geometry.Sphere;
 import org.scijava.vecmath.Color3f;
 import org.scijava.vecmath.Point3f;
 import org.scijava.vecmath.Vector3f;
+import org.scijava.vecmath.Point3d;
+import org.scijava.vecmath.Vector3d;
 
 import customnode.CustomPointMesh;
 import customnode.Mesh_Maker;
@@ -152,7 +154,7 @@ public class Java3DHelpers
 		
 		// init the structures needed to code the position of the beads
 		final Transform3D transform = new Transform3D();
-		final Point3f translation = new Point3f();
+		final Point3d translation = new Point3d();
 
 		// add all interestpoints
 		for ( final InterestPoint p : points )
@@ -212,6 +214,19 @@ public class Java3DHelpers
 
 		lineMesh.add( p0 );
 		lineMesh.add( p1 );
+		
+		final Content content = univ.addLineMesh( lineMesh, new Color3f(), name, false );
+		content.showCoordinateSystem( false );
+
+		return content;
+	}
+
+	public static Content drawLine( final Image3DUniverse univ, final Point3d p0, final Point3d p1, final String name )
+	{
+		final List< Point3f > lineMesh = new ArrayList< Point3f >();
+
+		lineMesh.add( new Point3f( p0 ) );
+		lineMesh.add( new Point3f( p1 ) );
 		
 		final Content content = univ.addLineMesh( lineMesh, new Color3f(), name, false );
 		content.showCoordinateSystem( false );
@@ -287,14 +302,14 @@ public class Java3DHelpers
 
 	public static Content drawInvisibleBoundingBox( final Image3DUniverse univ, final Map< Integer, Cell > cells )
 	{
-		final float[][] positions = new float[ cells.values().size() ][ 3 ];
+		final double[][] positions = new double[ cells.values().size() ][ 3 ];
 
 		int i = 0;
 
 		for ( final Cell cell : cells.values() )
 		{
 			for ( int d = 0; d < 3; ++d )
-				positions[ i ][ d ] = cell.getPosition().getFloatPosition( d );
+				positions[ i ][ d ] = cell.getPosition().getDoublePosition( d );
 
 			++i;
 		}
@@ -304,7 +319,7 @@ public class Java3DHelpers
 
 	public static Content drawInvisibleBoundingBox( final Image3DUniverse univ, final List< InterestPoint > list )
 	{
-		final float[][] positions = new float[ list.size() ][ 3 ];
+		final double[][] positions = new double[ list.size() ][ 3 ];
 
 		int i = 0;
 
@@ -319,7 +334,7 @@ public class Java3DHelpers
 		return drawInvisibleBoundingBox( univ, positions );
 	}
 
-	public static Content drawInvisibleBoundingBox( final Image3DUniverse univ, float[][] p )
+	public static Content drawInvisibleBoundingBox( final Image3DUniverse univ, double[][] p )
 	{
 		float[] min = null;
 		float[] max = null;
@@ -333,15 +348,15 @@ public class Java3DHelpers
 
 				for ( int d = 0; d < min.length; ++d )
 				{
-					min[ d ] = p[ i ][ d ] - 50;
-					max[ d ] = p[ i ][ d ] + 50;
+					min[ d ] = (float)p[ i ][ d ] - 50;
+					max[ d ] = (float)p[ i ][ d ] + 50;
 				}
 			}
 
 			for ( int d = 0; d < min.length; ++d )
 			{
-				min[ d ] = Math.min( min[ d ], p[ i ][ d ] - 50 );
-				max[ d ] = Math.max( max[ d ], p[ i ][ d ] + 50 );
+				min[ d ] = Math.min( min[ d ], (float)p[ i ][ d ] - 50 );
+				max[ d ] = Math.max( max[ d ], (float)p[ i ][ d ] + 50 );
 			}
 		}
 

@@ -28,7 +28,7 @@ public class PointFunctionMatch extends PointMatch
 
 	//final protected Function<Point> function;
 
-	float distance = 0;
+	double distance = 0;
 	
 	public PointFunctionMatch( final Point p1 )
 	{
@@ -47,14 +47,14 @@ public class PointFunctionMatch extends PointMatch
 	
 	public void apply( final CoordinateTransform t )
 	{
-		distance = (float)((Function)t).distanceTo( p1 );
+		distance = ((Function)t).distanceTo( p1 );
 	}
 	
 	public void apply( final CoordinateTransform t, final float amount )
 	{
-		distance = (float)((Function)t).distanceTo( p1 );
+		distance = ((Function)t).distanceTo( p1 );
 	}
 	
 	@Override
-	public float getDistance() { return distance; }
+	public double getDistance() { return distance; }
 }

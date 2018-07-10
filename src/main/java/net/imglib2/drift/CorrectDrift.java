@@ -34,8 +34,8 @@ public class CorrectDrift
 		if ( !driftFile.exists() )
 			imp = computeIndividualDrifts( dir, file, numChannels );
 
-		final float[] driftsX = loadDrifts( driftFile, 1 );
-		final float[] driftsY = loadDrifts( driftFile, 2 );
+		final double[] driftsX = loadDrifts( driftFile, 1 );
+		final double[] driftsY = loadDrifts( driftFile, 2 );
 
 		final Line lx = removeOutliers( driftsX, 10, 0.5 );
 		final Line ly = removeOutliers( driftsY, 10, 0.5 );
@@ -44,7 +44,7 @@ public class CorrectDrift
 
 		System.out.println( "z" + "\t" + "ransacdriftX" + "\t" + "ransacdriftY" + "\t" + "fitX" + "\t" + "fitY" );
 
-		final float[] t = new float[ 2 ];
+		final double[] t = new double[ 2 ];
 		for ( int z = 0; z < driftsX.length; ++z )
 		{
 			t[ 0 ] = t[ 1 ] = 0;
@@ -91,14 +91,14 @@ public class CorrectDrift
 		return list;
 	}
 
-	public static Line removeOutliers( final float[] drift, final double epsilon, final double minInlierRatio )
+	public static Line removeOutliers( final double[] drift, final double epsilon, final double minInlierRatio )
 	{
 		final ArrayList< PointFunctionMatch > candidates = new ArrayList<PointFunctionMatch>();
 		final ArrayList< PointFunctionMatch > inliers = new ArrayList<PointFunctionMatch>();
 
 		for ( int z = 0; z < drift.length; ++ z )
 			if ( drift[ z ] != 0 )
-				candidates.add( new PointFunctionMatch( new Point( new float[]{ z, drift[ z ] } ) ) );
+				candidates.add( new PointFunctionMatch( new Point( new double[]{ z, drift[ z ] } ) ) );
 
 		int numRemoved = 0;
 
@@ -116,7 +116,7 @@ public class CorrectDrift
 				drift[ i ] = 0;
 
 			for ( final PointFunctionMatch i : inliers )
-				drift[ Math.round( i.getP1().getL()[ 0 ] ) ] = i.getP1().getL()[ 1 ];
+				drift[ (int)Math.round( i.getP1().getL()[ 0 ] ) ] = i.getP1().getL()[ 1 ];
 				
 			System.out.println( "y = " + l.getM() + " x + " + l.getN() + ", " + numRemoved + " points removed." );
 
@@ -130,9 +130,9 @@ public class CorrectDrift
 		}
 	}
 
-	protected float[] loadDrifts( final File driftFile, final int column )
+	protected double[] loadDrifts( final File driftFile, final int column )
 	{
-		final ArrayList< Float > drifts = new ArrayList< Float >();
+		final ArrayList< Double > drifts = new ArrayList< Double >();
 		final BufferedReader in = TextFileAccess.openFileRead( driftFile );
 
 		try
@@ -140,7 +140,7 @@ public class CorrectDrift
 			while ( in.ready() )
 			{
 				String[] values = in.readLine().trim().split( "\t" );
-				drifts.add( Float.parseFloat( values[ column ] ) );
+				drifts.add( Double.parseDouble( values[ column ] ) );
 			}
 		}
 		catch (IOException e)
@@ -149,7 +149,7 @@ public class CorrectDrift
 			return null;
 		}
 
-		final float[] d = new float[ drifts.size() ];
+		final double[] d = new double[ drifts.size() ];
 		for ( int i = 0; i < d.length; ++i )
 			d[ i ] = drifts.get( i );
 
@@ -160,7 +160,7 @@ public class CorrectDrift
 	{
 		final ImagePlus imp = load( dir, file, numChannels );
 		final ArrayList<InvertibleBoundable> models = Matching.descriptorBasedStackRegistration( imp, getParameters( 1 ) );
-		final float[] t = new float[ 2 ];
+		final double[] t = new double[ 2 ];
 
 		final PrintWriter out = TextFileAccess.openFileWrite( new File ( dir, file + driftExt ) );
 		int z = 0;

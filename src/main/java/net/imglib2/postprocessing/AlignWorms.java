@@ -11,6 +11,7 @@ import org.scijava.java3d.Transform3D;
 import org.scijava.java3d.TransparencyAttributes;
 import org.scijava.java3d.utils.geometry.Sphere;
 import org.scijava.vecmath.Color3f;
+import org.scijava.vecmath.Point3d;
 import org.scijava.vecmath.Point3f;
 
 import ij.IJ;
@@ -42,16 +43,16 @@ import spim.process.interestpointregistration.icp.IterativeClosestPointParameter
 
 public class AlignWorms
 {
-	public static void align( final Cells cellsA, final Cells cellsB, final String name, final ArrayList< Pair< Point3f, Point3f > > connections, final ArrayList< Pair< Cell, Cell > > corresponding )
+	public static void align( final Cells cellsA, final Cells cellsB, final String name, final ArrayList< Pair< Point3d, Point3d > > connections, final ArrayList< Pair< Cell, Cell > > corresponding )
 	{
 		final List< InterestPoint > interestpointListA = new ArrayList<>();
 		final List< InterestPoint > interestpointListB = new ArrayList<>();
 
 		for ( final Cell c : cellsA.getCells().values() )
-			interestpointListA.add( new InterestPoint( c.getId(), new float[]{ c.getFloatPosition( 0 ), c.getFloatPosition( 1 ), c.getFloatPosition( 2 ) } ) );
+			interestpointListA.add( new InterestPoint( c.getId(), new double[]{ c.getDoublePosition( 0 ), c.getDoublePosition( 1 ), c.getDoublePosition( 2 ) } ) );
 
 		for ( final Cell c : cellsB.getCells().values() )
-			interestpointListB.add( new InterestPoint( c.getId(), new float[]{ c.getFloatPosition( 0 ), c.getFloatPosition( 1 ), c.getFloatPosition( 2 ) } ) );
+			interestpointListB.add( new InterestPoint( c.getId(), new double[]{ c.getDoublePosition( 0 ), c.getDoublePosition( 1 ), c.getDoublePosition( 2 ) } ) );
 
 		final MatchPointList listA = new MatchPointList( interestpointListA, null );
 		final MatchPointList listB = new MatchPointList( interestpointListB, null );
@@ -82,9 +83,9 @@ public class AlignWorms
 				final Cell cellB = cellsB.getCells().get( idB );
 
 				corresponding.add( new ValuePair< Cell, Cell >( cellA, cellB ) );
-				connections.add(  new ValuePair< Point3f, Point3f >(
-						new Point3f( cellA.getFloatPosition( 0 ), cellA.getFloatPosition( 1 ), cellA.getFloatPosition( 2 ) ),
-						new Point3f( cellB.getFloatPosition( 0 ), cellB.getFloatPosition( 1 ), cellB.getFloatPosition( 2 ) ) ) );
+				connections.add(  new ValuePair< Point3d, Point3d >(
+						new Point3d( cellA.getFloatPosition( 0 ), cellA.getFloatPosition( 1 ), cellA.getFloatPosition( 2 ) ),
+						new Point3d( cellB.getFloatPosition( 0 ), cellB.getFloatPosition( 1 ), cellB.getFloatPosition( 2 ) ) ) );
 			}
 		}
 		catch ( Exception e )
@@ -165,15 +166,15 @@ public class AlignWorms
 		}
 	}
 
-	public static void drawLines( final Image3DUniverse univ, final ArrayList< Pair< Point3f, Point3f > > connections )
+	public static void drawLines( final Image3DUniverse univ, final ArrayList< Pair< Point3d, Point3d > > connections )
 	{
 		final List< Point3f > lineMesh = new ArrayList< Point3f >();
 
 		for ( int i = 0; i < connections.size(); ++i )
 		{
-			final Pair< Point3f, Point3f > pair = connections.get( i );
-			lineMesh.add( pair.getA() );
-			lineMesh.add( pair.getB() );
+			final Pair< Point3d, Point3d > pair = connections.get( i );
+			lineMesh.add( new Point3f( pair.getA() ) );
+			lineMesh.add( new Point3f( pair.getB() ) );
 			//Java3DHelpers.drawLine( univ, pair.getA(), pair.getB(), "Line " + i );
 		}
 
@@ -220,7 +221,7 @@ public class AlignWorms
 			groupConfocal.detach();
 			groupConfocal = Java3DHelpers.drawCells( univ, confocal, new Transform3D(), transparency );
 
-			final ArrayList< Pair< Point3f, Point3f > > connections = new ArrayList<>();
+			final ArrayList< Pair< Point3d, Point3d > > connections = new ArrayList<>();
 			final ArrayList< Pair< Cell, Cell > > corresponding = new ArrayList<>();
 
 			align( em, confocal, "Angle " + (degrees % 360), connections, corresponding );

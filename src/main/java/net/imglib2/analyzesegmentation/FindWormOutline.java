@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import org.scijava.vecmath.Point3f;
-import org.scijava.vecmath.Vector3f;
+import org.scijava.vecmath.Point3d;
+import org.scijava.vecmath.Vector3d;
 
 import net.imglib2.RealPoint;
 import net.imglib2.analyzesegmentation.wormfit.FirstInlierCells;
@@ -78,24 +78,24 @@ public class FindWormOutline
 
 	public ArrayList< InlierCells > getSegments() { return segments; }
 
-	protected InlierCells fitNextSegment( final InlierCells previousInliers, final Score score, final float cutLength, final int sementCount )
+	protected InlierCells fitNextSegment( final InlierCells previousInliers, final Score score, final double cutLength, final int sementCount )
 	{
 		// the initial radius and point are the last radius and point of the previous segment
-		final float sr = previousInliers.getR1();
+		final double sr = previousInliers.getR1();
 
 		// the initial search vector
-		final Vector3f sv = new Vector3f(
+		final Vector3d sv = new Vector3d(
 				previousInliers.getP1().x - previousInliers.getP0().x,
 				previousInliers.getP1().y - previousInliers.getP0().y,
 				previousInliers.getP1().z - previousInliers.getP0().z );
-		final float refL;
+		final double refL;
 
 		if ( FirstInlierCells.class.isInstance( previousInliers ) )
 			refL = sv.length() * 3f;
 		else
 			refL = sv.length() * cutLength;
 
-		final Point3f sp = new Point3f( previousInliers.getP1() );
+		final Point3d sp = new Point3d( previousInliers.getP1() );
 
 		InlierCells best = null;
 
@@ -105,7 +105,7 @@ public class FindWormOutline
 			//System.out.println( step );
 
 			// the best search vector found so far
-			final Vector3f bestSV = new Vector3f( sv );
+			final Vector3d bestSV = new Vector3d( sv );
 
 			// TODO: Remove manual stopping
 			int from, to;
@@ -125,24 +125,24 @@ public class FindWormOutline
 					for ( int xi = from; xi <= to; ++xi )
 					{
 						// compute the test vector
-						final Vector3f v = new Vector3f(
+						final Vector3d v = new Vector3d(
 								sv.x + xi * step,
 								sv.y + yi * step,
 								sv.z + zi * step );
 
 						// normalize it to the same length
-						final float l = refL;
-						//for ( float l = refL * 0.9f; l <= refL * 1.1; l += 1f )
+						final double l = refL;
+						//for ( double l = refL * 0.9f; l <= refL * 1.1; l += 1f )
 						{
 							Algebra.normalizeLength( v, l );
 	
 							// compute the corresponding point
-							final Point3f p = new Point3f( sp.x + v.x, sp.y + v.y, sp.z + v.z );
+							final Point3d p = new Point3d( sp.x + v.x, sp.y + v.y, sp.z + v.z );
 	
 							// compute the quality of the fit
 							//final float r0 = sr;
-							for ( float r0 = sr * 0.9f; r0 <= sr * 1.1f; r0 += 0.75f )
-								for ( float r1 = 0; r1 <= sr * 1.4f; r1 += 1f )
+							for ( double r0 = sr * 0.9; r0 <= sr * 1.1f; r0 += 0.75 )
+								for ( double r1 = 0; r1 <= sr * 1.4; r1 += 1 )
 								{
 									final InlierCells inliers = testGuess( sp, p, r0, r1, cells );
 			
@@ -183,14 +183,14 @@ public class FindWormOutline
 		//
 		// only take 1/3 of the vector
 		//
-		final Vector3f v = new Vector3f(
+		final Vector3d v = new Vector3d(
 				best.getP1().x - best.getP0().x,
 				best.getP1().y - best.getP0().y,
 				best.getP1().z - best.getP0().z );
 
 		Algebra.normalizeLength( v, v.length() / cutLength );
 		
-		final Point3f p1 = new Point3f(
+		final Point3d p1 = new Point3d(
 				best.getP0().x + v.x,
 				best.getP0().y + v.y,
 				best.getP0().z + v.z );
@@ -208,10 +208,10 @@ public class FindWormOutline
 		return best;
 	}
 
-	protected InlierCells testGuess( final Point3f p0, final Point3f p1, final float r0, final float r1, final Cells cells )
+	protected InlierCells testGuess( final Point3d p0, final Point3d p1, final double r0, final double r1, final Cells cells )
 	{
 		final ArrayList< InlierCell > inliers = new ArrayList< InlierCell >();
-		final Point3f q = new Point3f();
+		final Point3d q = new Point3d();
 
 		final double r[] = new double[ 2 ];
 
@@ -222,7 +222,7 @@ public class FindWormOutline
 				(p1.z - p0.z)/2 + p0.z } );
 
 		// search radius is the half the length of the vector + maxR
-		final Vector3f v = new Vector3f( p1.x - p0.x, p1.y - p0.y, p1.z - p0.z );
+		final Vector3d v = new Vector3d( p1.x - p0.x, p1.y - p0.y, p1.z - p0.z );
 
 		// look for all points in range
 		RadiusNeighborSearchOnKDTree< Cell > search = cells.getSearch();
@@ -255,8 +255,8 @@ public class FindWormOutline
 
 	protected InlierCells defineFirstCells( final float initialRadius )
 	{
-		final Point3f p0 = new Point3f( cell0.getPosition().getFloatPosition( 0 ), cell0.getPosition().getFloatPosition( 1 ), cell0.getPosition().getFloatPosition( 2 ) );
-		final Point3f p1 = new Point3f( cell1.getPosition().getFloatPosition( 0 ), cell1.getPosition().getFloatPosition( 1 ), cell1.getPosition().getFloatPosition( 2 ) );
+		final Point3d p0 = new Point3d( cell0.getPosition().getFloatPosition( 0 ), cell0.getPosition().getFloatPosition( 1 ), cell0.getPosition().getFloatPosition( 2 ) );
+		final Point3d p1 = new Point3d( cell1.getPosition().getFloatPosition( 0 ), cell1.getPosition().getFloatPosition( 1 ), cell1.getPosition().getFloatPosition( 2 ) );
 
 		final ArrayList< InlierCell > inliers = new ArrayList< InlierCell >();
 

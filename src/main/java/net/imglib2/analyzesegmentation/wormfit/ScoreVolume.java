@@ -1,6 +1,6 @@
 package net.imglib2.analyzesegmentation.wormfit;
 
-import javax.vecmath.Vector3f;
+import javax.vecmath.Vector3d;
 
 /**
  * Maximizes the cells per volume and rewards more cells
@@ -10,8 +10,8 @@ import javax.vecmath.Vector3f;
  */
 public class ScoreVolume implements Score
 {
-	final Vector3f v0 = new Vector3f();
-	final Vector3f v1 = new Vector3f();
+	final Vector3d v0 = new Vector3d();
+	final Vector3d v1 = new Vector3d();
 
 	@Override
 	public double score( final InlierCells previous, final InlierCells cells )
@@ -52,7 +52,7 @@ public class ScoreVolume implements Score
 
 	protected double volume( final InlierCells cells )
 	{
-		final Vector3f v = new Vector3f(
+		final Vector3d v = new Vector3d(
 				cells.getP1().x - cells.getP0().x,
 				cells.getP1().y - cells.getP0().y,
 				cells.getP1().z - cells.getP0().z );
