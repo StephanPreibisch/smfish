@@ -62,6 +62,17 @@ public class Java3DHelpers
 			final Color3f c,
 			final float transparency )
 	{
+		return drawCells( univ, cells, globalTransform, c, new Random( 1 ), transparency );
+	}
+
+	public static BranchGroup drawCells(
+			final Image3DUniverse univ,
+			final Cells cells,
+			final Transform3D globalTransform,
+			final Color3f c,
+			final Random random,
+			final float transparency )
+	{
 		// get the scene
 		final BranchGroup parent = univ.getScene();
 
@@ -73,8 +84,6 @@ public class Java3DHelpers
 		final Transform3D transform = new Transform3D();
 		final Point3f translation = new Point3f();
 		final float[] loc = new float[ 3 ];
-
-		final Random random = new Random( 1 );
 
 		// add all beads
 		for ( final int id : cells.getCells().keySet() )
@@ -96,7 +105,8 @@ public class Java3DHelpers
 			transformGroup.setCapability( TransformGroup.ALLOW_CHILDREN_WRITE );
 
 			// add the sphere
-			int r = random.nextInt( 192 );
+			int r = random == null ? 255 : random.nextInt( 192 );
+
 			final Appearance appearance = new Appearance();
 			if ( c == null )
 			{
@@ -105,6 +115,7 @@ public class Java3DHelpers
 			else
 			{
 				r += 64;
+				r = Math.min( 255, r );
 				appearance.setColoringAttributes( new ColoringAttributes( new Color3f( c.x * r/255f, c.y * r/255f, c.z * r/255f ), ColoringAttributes.SHADE_GOURAUD ) );
 			}
 			appearance.setTransparencyAttributes( new TransparencyAttributes( TransparencyAttributes.NICEST, transparency ) );
